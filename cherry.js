@@ -21,30 +21,38 @@ async function drawToothPick() {
         let val = 0
         if (p.y > liquidTop - 60 && p.y < liquidTop) val = map(p.y, liquidTop - 60, liquidTop, 5, 50)
         if (p.y > liquidTop) val = 255
-        stroke(0, val)
 
-        line(p.x, -p.y, p.x, -p.y)
+        const normalDir = toothpickPath.getNormalAt(i)
+        for (let j = 0; j < 10; j++) {
+            const p2 = normalDir.multiply(-j).add(p)
+            stroke((i + j) % 30 < 15 ? 0 : 255, val)
+            line(p2.x, -p2.y, p2.x, -p2.y)
+        }
+
         await timeout()
     }
 }
 
 async function makeCherry() {
-    if (drink.cherry == 'floating') {
+    let cherryOrOlive = random() > .5 ? 'cherry' : 'olive'
+    if (drink.cherry.includes('cherry')) cherryOrOlive = 'cherry'
+    if (drink.cherry.includes('olive')) cherryOrOlive = 'olive'
+
+    if (drink.cherry.includes('floating')) {
         const liquidCorner = liquidPath.segments[liquidPath.segments.length - 2].point
         const cherryPos = P((liquidCorner.x - 30) * random(-1, 1), liquidCorner.y)
-        await drawCherry(cherryPos, 'cherry', { stem: true })
+        await drawCherry(cherryPos, cherryOrOlive, { stem: true })
     }
-    if (drink.cherry == 'skewed' && drink.toothpick) {
-        const cherryOrOlive = random() > .5 ? 'cherry' : 'olive'
+
+    if (drink.cherry.includes('skewed') && drink.toothPick) {
         const numCherries = random(1, 3)
         for (let i = 0; i < numCherries; i++) {
-            await drawCherry(toothpickPath.getPointAt(toothpickPath.length * random()), cherryOrOlive)
+            await drawCherry(toothpickPath.getPointAt(toothpickPath.length * random(.1, .7)), cherryOrOlive)
         }
     }
 }
 
 async function drawCherry(pos, cherryOrOlive, data = {}) {
-    print('draw cherry', pos, cherryOrOlive, data)
     let pathToDraw
     let lightVals = [0, 0]
     if (cherryOrOlive == 'cherry') {
@@ -58,9 +66,8 @@ async function drawCherry(pos, cherryOrOlive, data = {}) {
     }
 
     let cherryColor = cherryOrOlive == 'cherry' ? color(200, 40, 60) : color(10, 100, 40)
-    if (!drink.cherry == 'floating') cherryColor = color(40, 14, 20)
+    if (!drink.cherry.includes('floating')) cherryColor = color(40, 14, 20)
 
-    print(pathToDraw.length)
     await pointilizePath(pathToDraw, 5, cherryColor, p => {
         const lightCenter = P(pathToDraw.bounds.left + pathToDraw.bounds.width * .7, pathToDraw.bounds.top + pathToDraw.bounds.height * .7)
         const dirToCenter = p.subtract(lightCenter)
@@ -73,7 +80,7 @@ async function drawCherry(pos, cherryOrOlive, data = {}) {
         await pointilizePath(pathToDraw, 5, color(255, 0, 0))
     }
 
-    if (data.stem) {
+    if (cherryOrOlive == 'cherry' && data.stem) {
         const stemStart = P(pathToDraw.bounds.left + pathToDraw.bounds.width * .3, pathToDraw.bounds.top + pathToDraw.bounds.height * .7)
         const stemEnd = stemStart.add(random(-40, 40), 25)
         const stemEndDir = pointFromAngle(random(360), random(10, 30))
@@ -94,21 +101,34 @@ async function drawCherry(pos, cherryOrOlive, data = {}) {
 
 
 async function drawLemon() {
-    const lemonPos = path.lastSegment.point
+    const lemonPos = path.lastSegment.point.clone()
 
-    const lemonOuter = new Path.Circle({ center: P(0, 0), radius: 70 })
-    const lemonInner = new Path.Circle({ center: P(0, 0), radius: 65 })
-    const lemonSliceOuter = new Path.Circle({ center: P(0, 0), radius: 60 })
+    let lemonOuter = new Path.Circle({ center: P(0, 0), radius: 70 })
+    let lemonInner = new Path.Circle({ center: P(0, 0), radius: 65 })
+    let lemonSliceOuter = new Path.Circle({ center: P(0, 0), radius: 60 })
+
+    if (random() < 1) {
+        const lemonTrimstart = 20 + random(45)
+        const lemonTrimend = 20 + 180 - random(45)
+        const lemonTrim = new Path([P(0, 0)])
+        for (let a = lemonTrimstart; a < lemonTrimend; a += 5) {
+            lemonTrim.add(pointFromAngle(a, 120))
+        }
+        lemonTrim.closePath()
+        lemonOuter = lemonOuter.subtract(lemonTrim)
+        lemonInner = lemonInner.subtract(lemonTrim)
+        lemonSliceOuter = lemonSliceOuter.subtract(lemonTrim)
+    }
 
     const lemonSlices = []
     for (let i = 0; i < 6; i++) {
         const newSlice = new Path([
-            pointFromAngle(-20 + i * 60, 100), 
-            pointFromAngle(-20 + i * 60, 10), 
-            pointFromAngle(20 + i * 60, 10), 
+            pointFromAngle(-20 + i * 60, 100),
+            pointFromAngle(-20 + i * 60, 10),
+            pointFromAngle(20 + i * 60, 10),
             pointFromAngle(20 + i * 60, 100)
         ]).intersect(lemonSliceOuter)
-        newSlice.wonky(.9, 1.1)
+        // newSlice.wonky(.9, 1.1)
         newSlice.smooth()
         lemonSlices.push(newSlice)
     }
@@ -116,8 +136,8 @@ async function drawLemon() {
     translate(lemonPos.x, -lemonPos.y)
     fillPath(lemonOuter, '#E3E495')
     fillPath(lemonInner, '#FAEED1')
-    lemonSlices.forEach(lemonSlice=>fillPath(lemonSlice, '#B7BB69'))
+    lemonSlices.forEach(lemonSlice => fillPath(lemonSlice, '#B7BB69'))
     pop()
-    lemonOuter.position = lemonPos
-    await pointilizePath(lemonOuter, 5, color('#E3E495'))
+    // lemonOuter.position = lemonPos
+    // await pointilizePath(lemonOuter, 5, color('#E3E495'))
 }

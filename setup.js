@@ -1,7 +1,7 @@
 async function setup() {
     const ratio = 594 / 841
-    if (window.innerWidth / window.innerHeight > ratio) canvas = createCanvas(window.innerHeight * ratio, window.innerHeight)
-    else canvas = createCanvas(window.innerWidth, window.innerWidth / ratio)
+    if (window.innerWidth / window.innerHeight > ratio) canvas = createCanvas(round(window.innerHeight * ratio), round(window.innerHeight))
+    else canvas = createCanvas(round(window.innerWidth), round(window.innerWidth / ratio))
     paperCanvas = document.getElementById('paperCanvas');
     paperCanvas.width = width;
     paperCanvas.height = height
@@ -36,8 +36,14 @@ function preload(){
     distortShader = loadShader('shaders/shader.vert', 'shaders/distort.frag')
     blurShader = loadShader('shaders/shader.vert', 'shaders/blur.frag')
     bgShader = loadShader('shaders/shader.vert', 'shaders/bg.frag')
+    cloudsShader = loadShader('shaders/shader.vert', 'shaders/clouds.frag')
+    flareShader = loadShader('shaders/shader.vert', 'shaders/flare.frag')
     shaderGraphics = createGraphics(100,100, WEBGL)
     shaderGraphics.noStroke()
+    // shaderGraphics.setAttributes('antialias', true);
+    // shaderGraphics.smooth()
+    myFont = loadFont('fonts/BebasNeue-Regular.ttf')
+    
 }
 
 function applyShader(shdr,img){

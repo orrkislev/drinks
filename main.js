@@ -8,13 +8,40 @@ let PERSPECTIVE = 1 / 8
 async function makeImage() {
     initDrink()
     initPaths()
-
+    noSmooth()
     drawbg()
+    // clouds()
+
+    // if (drink.name) {
+    //     let textPos = height*.2
+    //     for (word of drink.name){
+    //         blendMode(SUBTRACT)
+    //         fill(255)
+    //         textFont(myFont)
+    //         textSize(15)
+    //         textAlign(CENTER,TOP)
+    //         while (textWidth(word) < width*.9) {
+    //             textSize(textSize() + 1)
+    //         }
+    //         text(word, width*.5, textPos)
+    //         textPos += textSize()*.7
+    //         blendMode(BLEND)
+    //     }
+    // }
+
     translate(width / 2, height / 2 + 200)
+
+    // drink.cherry = 'floating cherry'
+    // for (let x=-width/2;x<width/2;x+=width/6){
+    //     for (let y=-height*.3;y<height;y+=height/10){
+    //         await drawCherry(P(x+ random(-30,30),y + random(-30,30)),'cherry',{stem:true})
+    //     }
+    // }
     // await glassShadow_curtain()
     await glassShadow()
 
 
+    // if (drink.rim) await rim('back')
     await drawGlass(path, 'back')
     if (path.bubble) {
         await drawGlass(path.bubble, 'back')
@@ -27,18 +54,32 @@ async function makeImage() {
     if (drink.mint) leaves()
     await drawDrinkElements()
 
-    if (drink.foam) await foam()
-    if (drink.foamBubbles) await drawFoamBubbles()
+    // if (drink.foam) await foam()
+    // if (drink.foamBubbles) await drawFoamBubbles()
 
-    if (drink.toothPick) await drawToothPick()
-    if (drink.cherry) await makeCherry()
-    if (drink.lemon) await drawLemon()
+    // if (drink.lemon) await drawLemon()
+    // if (drink.toothPick) await drawToothPick()
+    // if (drink.cherry) await makeCherry()
 
     await drawGlass(path, 'front')
     await sun()
+    // if (drink.rim) await rim('front')
+
+    resetMatrix()
+
 
     // await makeDropletsGraphics()
     // await applyDroplets()
+
+    // noSmooth()
+    // shaderGraphics.resizeCanvas(width/2, height)
+    // shaderGraphics.shader(flareShader)
+    // flareShader.setUniform('tex0', get(0,0,width/2,height))
+    // flareShader.setUniform('resolution', [width/2, height])
+    // flareShader.setUniform('radius', 50.0)
+    // shaderGraphics.rect(0,0, width/2, height)
+    // image(shaderGraphics, 0, 0)
+
 
     fxpreview()
 }
@@ -65,7 +106,7 @@ async function revolve(path, drawFunc, translationFunc = (p) => P(0, p.y)) {
 }
 
 function getPerspective(y) {
-    return map(y, 0, 350, 0.2, 0)
+    return map(y, 0, 350, 0.18, 0)
 }
 
 function getPointOnRevolved(path, offset, angle) {
@@ -79,7 +120,7 @@ function getPointOnRevolved(path, offset, angle) {
 
 
 
-async function pointilizePath(path, multiplyer = 1, clr = color(255), func = (p) => p) {
+async function pointilizePath_old(path, multiplyer = 1, clr = color(255), func = (p) => p) {
     const topLiquidPerspective = getPerspective(liquidPath.segments[0].point.y)
     for (let h = path.bounds.top; h < path.bounds.bottom; h += .5) {
         const l = new Path.Line(P(-width, h), P(width, h))
@@ -95,13 +136,14 @@ async function pointilizePath(path, multiplyer = 1, clr = color(255), func = (p)
 
                     const tAngle = map(t, startX, endX, 0, 180)
                     const inLiquid = h < liquidPath.bounds.bottom - sin(tAngle) * (endX - startX) * topLiquidPerspective / 2
-                    const liquidMultiplier = inLiquid ? 1 : 10
-                    const noiseScale = inLiquid ? 80 : 300
+                    const liquidMultiplier = inLiquid ? .5 : 10
+                    const noiseScale = inLiquid ? 120 : 300
 
                     const n = noise(p.x / noiseScale, p.y / noiseScale)
-                    const n2 = noise(p.x / noiseScale / 2, p.y / noiseScale * 5)
                     strokeWeight(4 * n)
-                    clr.setAlpha(n2 * (1 - (h - path.bounds.top) / (path.bounds.height)) * liquidMultiplier * multiplyer)
+                    // const n2 = noise(p.x / noiseScale / 2, p.y / noiseScale * 5)
+                    // clr.setAlpha(n2 * (1 - (h - path.bounds.top) / (path.bounds.height)) * liquidMultiplier * multiplyer + liquidMultiplier)
+                    clr.setAlpha(inLiquid ? n * n * multiplyer * 3 : multiplyer * 6)
                     stroke(clr)
                     line(p.x, -p.y, p.x, -p.y)
                     func(p)
@@ -160,4 +202,43 @@ function applyDroplets() {
 
     resetMatrix()
     image(shaderGraphics, 0, 0)
+}
+
+
+
+
+
+
+
+
+
+async function pointilizePath(path, func = () => { }) {
+    for (let h = path.bounds.top; h < path.bounds.bottom; h += .5) {
+        const l = new Path.Line(P(-width, h), P(width, h))
+        const pathintersections = path.getIntersections(l)
+        if (pathintersections.length > 1) {
+            for (let i = 0; i < pathintersections.length - 1; i += 2) {
+                const sliceStart = pathintersections[i].point
+                const sliceEnd = pathintersections[i + 1].point
+                const slicePath = new Path([sliceStart, sliceEnd])
+                func(slicePath)
+                slicePath.remove()
+            }
+            await timeout()
+        }
+        l.remove()
+    }
+}
+
+let topLiquidPerspective, topLiquidHeight
+function through(path, objectOffset = .5, func = () => { }) {
+    if (!topLiquidPerspective) topLiquidPerspective = getPerspective(liquidPath.segments[0].point.y)
+    if (!topLiquidHeight) topLiquidHeight = topLiquidPerspective * liquidPath.segments[liquidPath.segments.length - 2].point.x
+
+    for (let i = 0; i < path.length; i += .2) {
+        const p = path.getPointAt(i)
+        const iAngle = map(i, 0, path.length, 0, 180)
+        const inLiquid = p.y < liquidPath.bounds.bottom + objectOffset * topLiquidHeight - sin(iAngle) * (path.length) * topLiquidPerspective / 2
+        func({ point: p, inLiquid, index: i, perc: i / path.length })
+    }
 }
