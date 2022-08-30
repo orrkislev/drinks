@@ -3,85 +3,106 @@ class glassPath extends Path {
         super(args)
         this.segmentsData = []
     }
-    init(scl = 1){
+    init(scl = 1) {
         this.scl = scl
         this.add(P(0, 0))
 
         if (drink.glassType === 'highball' || drink.glassType === 'old fashioned') {
-            const radius = drink.glassType === 'highball' ? random(70, 140) : random(110, 180)
-            const height = drink.glassType === 'highball' ? random(300, 500) : random(150, 350)
-            const baseThickness = random(10, 50)
+            const radius = drink.glassType === 'highball' ? random(70, 140)*PS : random(110, 180)*PS
+            const height = drink.glassType === 'highball' ? random(300, 500)*PS : random(150, 350)*PS
+            const baseThickness = random(10, 50)*PS
             const topOffset = random(0, baseThickness)
-            this.addPoint(P(radius, 0), { fillet: random(35) })
-            this.addPoint(P(radius, baseThickness), { thickness: 10 })
+            this.addPoint(P(radius, 0), { fillet: random(35)*PS })
+            this.addPoint(P(radius, baseThickness), { thickness: 10*PS })
 
-            this.addPoint(P(radius + topOffset, height), { thickness: 5 })
+            this.addPoint(P(radius + topOffset, height), { thickness: 5*PS })
             if (random() < 0.5) this.lastSegment.handleIn = pointFromAngle(random(-170, -30), random(radius))
 
             if (random() < 0.8) this.makeBubble(baseThickness * 1.5, radius)
 
-            this.patternStart = 10
+            this.patternStart = 10*PS
             this.patternEnd = height
-
         } else if (drink.glassType === 'martini') {
-            const stemWidth = random(3, 10)
-            const stemHeight = random(70, 150)
-            const glassWidth = random(100, 200)
-            const glassHeight = random(100, 250)
-            const baseWidth = random(stemWidth + 10, glassWidth * .75)
+            const stemWidth = random(3, 10)*PS
+            const stemHeight = random(70, 150)*PS
+            const glassWidth = random(100, 200)*PS
+            const glassHeight = random(100, 250)*PS
+            const baseWidth = random(stemWidth + 10*PS, glassWidth * .75)
             this.addPoint(P(0, 0))
             this.addPoint(P(baseWidth, 0))
-            this.addPoint(P(baseWidth, 10), { fillet: 5 })
-            this.addPoint(P(stemWidth, 20), { fillet: 5 })
-            this.addPoint(P(stemWidth, stemHeight), { thickness: 15, fillet: 15 })
-            this.addPoint(P(glassWidth, stemHeight + glassHeight), { thickness: 10 })
+            this.addPoint(P(baseWidth, 10*PS), { fillet: 5*PS })
+            this.addPoint(P(stemWidth, 20*PS), { fillet: 5*PS })
+            this.addPoint(P(stemWidth, stemHeight), { thickness: 15*PS, fillet: 15*PS })
+            this.addPoint(P(glassWidth, stemHeight + glassHeight), { thickness: 10*PS })
             if (random() < .5) this.lastSegment.handleIn = pointFromAngle(random(-170, -30), random(min(glassHeight, glassWidth)))
 
-            this.patternStart = stemHeight + 10
+            this.patternStart = stemHeight + 10*PS
             this.patternEnd = stemHeight + glassHeight
 
         } else if (drink.glassType === 'wine') {
-            const stemWidth = random(3, 10)
-            const stemHeight = 150
-            const glassWidth = 100
-            const glassHeight = random(100, 250)
-            const baseWidth = random(stemWidth + 10, glassWidth * .75)
+            const stemWidth = random(3, 10)*PS
+            const stemHeight = random(100,200)*PS
+            const glassWidth = random(50,150)*PS
+            const glassHeight = random(100, 250)*PS
+            const baseWidth = random(stemWidth + 10*PS, glassWidth)
             this.addPoint(P(0, 0))
             this.addPoint(P(baseWidth, 0))
-            this.addPoint(P(baseWidth, 10), { fillet: 5 })
-            this.addPoint(P(stemWidth, 20), { fillet: 5 })
-            this.addPoint(P(stemWidth, stemHeight), { thickness: 15, fillet: 15 })
-            this.addPoint(P(glassWidth * random(1, 1.4), stemHeight + glassHeight * random(.3, .7)), { thickness: 10, fillet: 50 })
-            this.addPoint(P(glassWidth, stemHeight + glassHeight), { thickness: 10 })
+            this.addPoint(P(baseWidth, 10*PS), { fillet: 5*PS })
+            this.addPoint(P(stemWidth, 20*PS), { fillet: 5*PS })
+            this.addPoint(P(stemWidth, stemHeight), { thickness: 15*PS, fillet: 15*PS })
+            this.addPoint(P(glassWidth * random(1, 1.4), stemHeight + glassHeight * random(.3, .7)), { thickness: 10*PS, fillet: 50*PS })
+            this.addPoint(P(glassWidth, stemHeight + glassHeight), { thickness: 10*PS })
             this.lastSegment.handleIn = pointFromAngle(random(-170, -30), random(min(glassHeight, glassWidth)))
 
             this.patternStart = stemHeight + 10
             this.patternEnd = stemHeight + glassHeight
         } else if (drink.glassType === 'margarita') {
-            const stemWidth = random(3, 10)
-            const stemHeight = 150
-            const glassWidth = 100
-            const glassHeight = random(100, 250)
-            const baseWidth = random(stemWidth + 10, glassWidth * .75)
+            const stemWidth = random(3, 10)*PS
+            const stemHeight = random(100,200)*PS
+            const glassWidth = random(50,150)*PS
+            const glassHeight = random(100, 250)*PS
+            const baseWidth = random(stemWidth + 10*PS, glassWidth)
             this.addPoint(P(0, 0))
             this.addPoint(P(baseWidth, 0))
-            this.addPoint(P(baseWidth, 10), { fillet: 5 })
-            this.addPoint(P(stemWidth, 20), { fillet: 5 })
-            this.addPoint(P(stemWidth, stemHeight), { thickness: 15, fillet: 15 })
+            this.addPoint(P(baseWidth, 10*PS), { fillet: 5*PS })
+            this.addPoint(P(stemWidth, 20*PS), { fillet: 5*PS })
+            this.addPoint(P(stemWidth, stemHeight), { thickness: 15*PS, fillet: 15*PS })
             this.addPoint(P(glassWidth * random(1, 1.4), stemHeight + glassHeight * random(.3, .7)), {
-                thickness: 10, fillet: 50,
-                handleIn: pointFromAngle(-90, 100),
-                handleOut: pointFromAngle(0, 100)
+                thickness: 10*PS, fillet: 50*PS,
+                handleIn: pointFromAngle(-90, 100*PS),
+                handleOut: pointFromAngle(0, 100*PS)
             })
-            this.addPoint(P(glassWidth, stemHeight + glassHeight), { thickness: 10 })
+            this.addPoint(P(glassWidth, stemHeight + glassHeight), { thickness: 10*PS })
             this.lastSegment.handleIn = pointFromAngle(random(-170, -30), random(min(glassHeight, glassWidth)))
 
-            this.patternStart = stemHeight + 10
+            this.patternStart = stemHeight + 10*PS
             this.patternEnd = stemHeight + glassHeight
+        } else if (drink.glassType === 'cocktail') {
+            const stemWidth = random(10, 20)*PS
+            const ballHeight = random(50,100)*PS
+            const ballWidth = random(20,60)*PS
+            const glassWidth = random(80,140)*PS
+            const glassHeight = random(100, 350)*PS
+            const baseWidth = random(stemWidth + 10*PS + ballWidth, glassWidth)
+            this.addPoint(P(0, 0))
+            this.addPoint(P(baseWidth, 0))
+            this.addPoint(P(baseWidth, 10*PS), { fillet: 5*PS })
+            this.addPoint(P(stemWidth, 20*PS), { fillet: 5*PS })
+            this.addPoint(P(stemWidth, 22*PS), { fillet: 5*PS })
+            this.addPoint(P(stemWidth + ballWidth, 20*PS+ballHeight/2), { fillet: 5*PS, handleIn: P(0,-ballWidth/2), handleOut: P(0,ballWidth/2) })
+            this.addPoint(P(stemWidth, 20*PS+ballHeight), { thickness: 15*PS, fillet: 15*PS })
+            this.addPoint(P(glassWidth * random(1, 1.4), 20*PS+ballHeight + glassHeight * random(.2, .5)), { thickness: 5*PS, fillet: 50*PS })
+            this.addPoint(P(glassWidth, 20*PS+ballHeight + glassHeight), { thickness: 5*PS })
+            this.lastSegment.handleIn = pointFromAngle(random(-170, -120), random(min(glassHeight, glassWidth)))
+
+            this.patternStart = 20*PS + ballHeight + 10*PS
+            this.patternEnd = 20*PS + ballHeight + glassHeight
         }
         this.add(this.lastSegment.point.add(-3, 0))
 
-        this.segments.forEach(seg=>seg.point = seg.point.multiply(this.scl))
+        this.segments.forEach(seg => seg.point = seg.point.multiply(this.scl))
+        this.ridgeEnd = this.length * random(.5,1)
+        this.ridgeSmoothStart = 0//random()<0.5 ? this.ridgeEnd : random(this.ridgeEnd)
     }
     addPoint(point, data = {}) {
         let seg
@@ -120,8 +141,8 @@ class glassPath extends Path {
             return newSegment
         })
         const firstSegment = innerSegments.shift()
-        const newFirstPoint = firstSegment.point.clone().add(-10, 0)
-        const newFirstSegment = new Segment(newFirstPoint, null, P(20, 0))
+        const newFirstPoint = firstSegment.point.clone().add(-10*PS, 0)
+        const newFirstSegment = new Segment(newFirstPoint, null, P(20*PS, 0))
         innerSegments.unshift(newFirstSegment)
 
         // if (newFirstPoint.x > 0) {
@@ -135,11 +156,11 @@ class glassPath extends Path {
     makeBubble(tall, wide) {
         const bubble = new Path()
         const offset = random(.2)
-        bubble.add(new Segment(P(0, tall * offset),0,P(wide, 0)))
+        bubble.add(new Segment(P(0, tall * offset), 0, P(wide, 0)))
         bubble.add(P(wide * random(.7), tall * .5))
         bubble.add(P(0, tall * (1 - offset)))
         bubble.smooth()
-        bubble.segments.forEach(seg=>seg.point = seg.point.multiply(this.scl))
+        bubble.segments.forEach(seg => seg.point = seg.point.multiply(this.scl))
         this.bubble = bubble
     }
 }
@@ -166,24 +187,27 @@ function initPaths() {
     const innerFirst = innerPath.segments[1].point
     innerBaseEllipse = new Path.Circle(P(0, innerFirst.y), innerFirst.x)
     innerBaseEllipse.scale(1, getPerspective(innerFirst.y))
-    fullInnerPath = fullInnerPath.join(innerBaseEllipse)
+    fullInnerPath = fullInnerPath.unite(innerBaseEllipse)
 
-    specialPatterns = [
-        // patternFlower((path.patternStart+path.patternEnd)/2, 25),
-        // patternCrissCross(path.patternStart, path.patternEnd, 30),
-    ]
+    const specialPatternSum = new Chance({0:10,1:6,2:2,3:1}).get()
+    specialPatterns = Array(specialPatternSum).fill(0).map(_=>getRandomSpecialPattern())
 
-    toothpickData = {
+    stickData = {
         startY: 50,
-        overboard: random(50, 200),
+        overboard: random(20, 70)*PS,
         startDir: random(180),
     }
-    toothpickData.endDir = toothpickData.startDir + 180
+    stickData.endDir = stickData.startDir + 180
 }
 
 
 
-
+async function glassBubble(){
+    if (path.bubble) {
+        await drawGlass(path.bubble, 'back')
+        await drawGlass(path.bubble, 'front')
+    }
+}
 
 
 
@@ -206,8 +230,9 @@ async function drawGlass(path, frontOrBack) {
 
     await revolve(path, async (ellipsePath, pathIndex) => {
         const startTime = performance.now()
-        if (ellipsePath.length < 2) return
+        if (ellipsePath.length < 2*PS) return
         const perc = pathIndex / (path.length - 1)
+
 
 
         ellipsePath.splitAt(ellipsePath.length * .5)
@@ -227,18 +252,18 @@ async function drawGlass(path, frontOrBack) {
             let clr = lerpColor(glassColor1, glassColor2, n)
             clr.setAlpha(frontOrBack == 'front' ? 2 : 6)
 
-            strokeWeight(2)
+            strokeWeight(2*PS)
             stroke(clr)
             drawDot(p)
 
             if (innerReflection < 1) {
-                const i2 = constrain(i + noise(p.x / 30, p.y / 30) * 150 - 75, 0, pathToDraw.length)
+                const i2 = constrain(i + noise(p.x / 30*PS, p.y / 30*PS) * 150 - 75, 0, pathToDraw.length)
                 const distFromEdges = abs(i2 - ellipsePath.length / 4) / (ellipsePath.length / 4)
                 stroke(0, (1 - innerReflection) * 2 * distFromEdges)
                 drawDot(p)
                 if (distFromEdges < .9) {
                     const liquidColor = drink.liquid[1]
-                    liquidColor.setAlpha(random(10) * (.5 - abs(innerReflection - 0.5)))
+                    liquidColor.setAlpha(random(.15) * (.5 - abs(innerReflection - 0.5)))
                     stroke(liquidColor)
                     drawDot(p)
                 }
@@ -249,14 +274,16 @@ async function drawGlass(path, frontOrBack) {
                     const d = abs(angle - h.pos)
                     const s = h.strength * (1 - d / h.width)
                     const n2 = noise(p.x / h.noiseSize + h.noiseOffset, p.y / h.noiseSize + h.noiseOffset) + .5
-                    strokeWeight(n2 * 6 * s)
+                    strokeWeight(PS*(n2 * 2 * s + random(drink.frost)))
 
-                    stroke(255, map(innerReflection, 0, 1, 6, 15) * s)
+                    stroke(255, map(innerReflection, 0, 1, 6, 35) * s)
                     drawDot(p)
                 }
             })
 
-            strokeWeight(2)
+
+
+            strokeWeight(2*PS)
             specialPatterns.forEach(specialPattern => {
                 specialPattern(pathToDraw, i, pathIndex, p)
             })
@@ -310,6 +337,20 @@ function patternFull(start, end, density) {
     }
 }
 
+function getRandomSpecialPattern(){
+    const patternType = choose(['crissCross', 'flower', 'full'])
+    const start = random(path.patternStart, path.patternEnd)
+    const end = random(start, path.patternEnd)
+    const middle = (start + end) / 2
+    if (patternType == 'crissCross') return patternCrissCross(start,end, random(20,40))
+    if (patternType == 'flower') return patternFlower(middle, random(20,40))
+    if (patternType == 'full'){
+        const thickness = min(random(30), (path.patternEnd-path.patternStart)/2)
+        const pos = random(path.patternStart, path.patternEnd-thickness)
+        return patternFull(pos,thickness, random(20,40))
+    }
+}
+
 
 const sunHorizontal = random()
 const sunHeight = random(.5, 1)
@@ -326,30 +367,9 @@ async function sun() {
         for (let i = 0; i < frontPath.length; i++) {
             const p = frontPath.getPointAt(i)
             const offset = P(posY - target, i - pos)
-            strokeWeight(2 * noise(offset.lengh / 30, posY / 50))
+            strokeWeight(PS * 2 * noise(offset.length / 30, posY / 50))
             stroke(255, (60 * noise(offset.angle / 30 + 1000, offset.length / 10 + 500) / offset.length) ** 2)
             drawDot(p)
-        }
-        await timeout()
-    })
-}
-
-async function rim(frontOrBack) {
-    const rimPath = path.clone().splitAt(path.length - 35)
-    await revolve(rimPath, async (ellipsePath, pathIndex) => {
-        const sum = random(10, 30)
-        for (let i = 0; i < sum; i++) {
-            const offset = frontOrBack == 'front' ? random(0, 0.5) : random(0.5, 1)
-            const p = ellipsePath.getPointAt(ellipsePath.length * offset)
-            strokeWeight(2)
-            stroke(0, 30)
-            for (let j = 0; j < 3; j++) {
-                drawDot(p.add(random(-3, 3), random(-3, 3)))
-            }
-            stroke(255, 50)
-            for (let j = 0; j < 5; j++) {
-                drawDot(p.multiply(random(1, 1.01)).add(random(-3, 3), random(-3, 3)))
-            }
         }
         await timeout()
     })

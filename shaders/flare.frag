@@ -59,7 +59,7 @@ void main() {
   uv.y = 1.0 - uv.y;
   
   vec4 origTex = texture2D(tex0,uv);
-  gl_FragColor = origTex;
-  // float tex = blur(tex0,uv, radius);
-  // gl_FragColor = origTex + pow(tex,5.0)*250.0;
+  // gl_FragColor = origTex;
+  float tex = blur(tex0,uv, radius);
+  gl_FragColor = origTex + pow(tex,5.0)*250.0;
 }

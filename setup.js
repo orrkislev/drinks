@@ -5,14 +5,15 @@ async function setup() {
     paperCanvas = document.getElementById('paperCanvas');
     paperCanvas.width = width;
     paperCanvas.height = height
-    pixelSize = width / 1000
+    PS = width / 611
     paper.setup(paperCanvas);
 
     view = paper.view;
 
     noiseSeed(round_random(100000))
 
-    toggleCanvas('p5')
+    canvas.elt.style.display = 'block';
+    paperCanvas.style.display = 'none';
 
     noLoop()
     angleMode(DEGREES)
@@ -20,17 +21,6 @@ async function setup() {
 
     await makeImage()
 }
-
-function toggleCanvas(t){
-    if (t=='paper'){
-        canvas.elt.style.display = 'none';
-        paperCanvas.style.display = 'block';
-    } else {
-        canvas.elt.style.display = 'block';
-        paperCanvas.style.display = 'none';
-    }
-}
-
 
 function preload(){
     distortShader = loadShader('shaders/shader.vert', 'shaders/distort.frag')
@@ -40,10 +30,10 @@ function preload(){
     flareShader = loadShader('shaders/shader.vert', 'shaders/flare.frag')
     shaderGraphics = createGraphics(100,100, WEBGL)
     shaderGraphics.noStroke()
+    shaderGraphics.pixelDensity(1)
     // shaderGraphics.setAttributes('antialias', true);
     // shaderGraphics.smooth()
-    myFont = loadFont('fonts/BebasNeue-Regular.ttf')
-    
+    myFont = loadFont('fonts/Dazzle-Solid.otf')
 }
 
 function applyShader(shdr,img){

@@ -1,28 +1,5 @@
 let activeGraphics = null
 allDots = 0
-const drawDotOld = (p) => {
-    drawDotXY(p.x, p.y)
-}
-nx = 0
-nxs = 0.06
-nx2 = 0
-nxs2 = 0.05 
-function drawDotXYOld(x, y, opacity = 1) {
-    allDots++
-    nx += nxs
-    nx2 += nxs2
-    const strokeVal = (40+noise(nx2+0.5)*40)/pencilMultiplier
-    const strokeOpacity =  (noise(nx2)*60+100) * opacity
-    stroke(red(penColor) * strokeVal, green(penColor) * strokeVal, blue(penColor) * strokeVal, strokeOpacity)
-    strokeWeight((2 + noise(nx) * 2) * pixelSize*pencilThickness)
-    line(x, y, x, y)
-    if (random() < 0.1) {
-        const rx = random(-1, 1) * .5
-        const ry = random(-1, 1) * .5
-        line(x + rx, y + ry, x + rx, y + ry)
-    }
-}
-
 function drawDot(p,offset1 = P(0,0),offset2 = P(0,0)) {
     line(p.x + offset1.x, -p.y*PERSPECTIVE + offset1.y, p.x + offset2.x, -p.y*PERSPECTIVE + offset2.y)
 }
@@ -78,7 +55,8 @@ function fillPath(path,clr) {
     if (clr) activeGraphics.fill(clr)
     activeGraphics.noStroke()
     if (path.children) {
-        path.children.forEach(fillPath)
+        // fillPath(path.children[0],clr)/
+        path.children.forEach(child=>fillPath(child,clr))
         return 
     }
     const ps = pathToPoints(path)

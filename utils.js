@@ -44,3 +44,29 @@ function applyRemove(func) {
     func()
     pop()
 }
+
+function findNumberInString(txt){
+    if (typeof txt == 'number') return txt
+    const r = /\d+/;
+    const regx = txt.match(r)
+    return regx ? parseInt(regx[0]) : false
+}
+function findWordInString(txt, word){
+    if (word instanceof Array) return word.reduce((a, b) => a || findWordInString(txt, b), false)
+    if (!(typeof txt == 'string')) return false
+    return txt.includes(word)
+}
+
+
+class Chance{
+    constructor(options){
+        this.options = []
+        Object.entries(options).forEach(([option, chance])=>this.add(option, chance))
+    }
+    add(option, chance){
+        for (let i=0;i<chance;i++) this.options.push(option)
+    }
+    get(){
+        return choose(this.options)
+    }
+}
