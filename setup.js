@@ -1,3 +1,4 @@
+let PS = 1
 async function setup() {
     const ratio = 594 / 841
     if (window.innerWidth / window.innerHeight > ratio) canvas = createCanvas(round(window.innerHeight * ratio), round(window.innerHeight))
