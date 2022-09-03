@@ -17,16 +17,16 @@ function bubbles() {
             const bubblePos = P(
                 random(-liquidPath.bounds.right, liquidPath.bounds.right),
                 liquidPath.bounds.bottom - random(liquidPath.bounds.height) * (t / 10))
-            let bubblePath = new Path.Circle(bubblePos, random(1, 4)*PS).wonky()
+            let bubblePath = new Path.Circle(bubblePos, random(1, 4) * PS).wonky()
             if (bubbleShape == 'seeds') bubblePath.segments[2].point.y -= 3
             bubblePath = bubblePath.rotate(random(-40, 40)).intersect(fullInnerPath)
             new DrinkElement(bubblePath, throughData => {
                 const p = throughData.point
 
-                let val = (noise(p.x / 70*PS + 400, p.y / 70*PS + 400) + .2) * (p.getDistance(bubblePath.position) / (2*PS)) * 35
+                let val = (noise(p.x / 70 * PS + 400, p.y / 70 * PS + 400) + .2) * (p.getDistance(bubblePath.position) / (2 * PS)) * 35
                 if (throughData.inLiquid) val *= .1
-                if (bubbleShape == 'seeds') val = random(10,25)
-                
+                if (bubbleShape == 'seeds') val = random(10, 25)
+
                 bubbleColor.setAlpha(val)
                 stroke(bubbleColor)
                 line(p.x, -p.y, p.x, -p.y)
@@ -40,12 +40,12 @@ function bubbles() {
             const bubblePos = P(
                 random(-liquidPath.bounds.right, liquidPath.bounds.right),
                 liquidPath.bounds.bottom + random() * random(offsetUp))
-            let bubblePath = new Path.Circle(bubblePos, random(1, 4)*PS).wonky()
+            let bubblePath = new Path.Circle(bubblePos, random(1, 4) * PS).wonky()
             if (bubblePos.y < path.bounds.bottom) bubblePath = bubblePath.intersect(fullInnerPath)
             new DrinkElement(bubblePath, throughData => {
                 const p = throughData.point
                 const distVal = (p.getDistance(bubblePath.position) / (bubblePath.bounds.width))
-                let val = (noise(p.x / 70*PS + 400, p.y / 70*PS + 400) + .2) * distVal * distVal * 35
+                let val = (noise(p.x / 70 * PS + 400, p.y / 70 * PS + 400) + .2) * distVal * distVal * 35
                 if (throughData.inLiquid) val *= .1
                 bubbleColor.setAlpha(val)
                 stroke(bubbleColor)
@@ -58,18 +58,19 @@ function bubbles() {
 async function ice() {
     if (!drink.ice) return
     const sumIce = findNumberInString(drink.ice)
-    let iceSize = 50
-    if (findWordInString(drink.ice, 'large')) iceSize = 100*PS
-    if (findWordInString(drink.ice, 'small')) iceSize = 25*PS
-    if (findWordInString(drink.ice, 'crushed')) iceSize = 5*PS
+    let iceSize = 35
+    if (findWordInString(drink.ice, 'large')) iceSize = 60 * PS
+    else if (findWordInString(drink.ice, 'small')) iceSize = 25 * PS
+    else if (findWordInString(drink.ice, 'crushed')) iceSize = 5 * PS
+    else iceSize = random(5, 60) * PS
     for (let t = 0; t < sumIce; t++) {
         const icePos = P(random(-liquidPath.bounds.right, liquidPath.bounds.right), random(liquidPath.bounds.top, liquidPath.bounds.bottom))
         const icePath = new Path.Circle(icePos, iceSize * random(.7, 1.3)).deform().intersect(fullInnerPath)
         if (!icePath || icePath.length == 0) continue
         new DrinkElement(icePath, throughData => {
             const p = throughData.point
-            let val = (noise(p.x / 70*PS + 400, p.y / 70*PS + 400) + .2) * (sin(180 * throughData.perc) + .3) * 150
-            if (throughData.inLiquid) val *= noise(p.x / 50*PS + 800, p.y / 50*PS + 800) * .1
+            let val = (noise(p.x / 70 * PS + 400, p.y / 70 * PS + 400) + .2) * (sin(180 * throughData.perc) + .3) * 150
+            if (throughData.inLiquid) val *= noise(p.x / 50 * PS + 800, p.y / 50 * PS + 800) * .1
             stroke(255, val)
             line(p.x, -p.y, p.x, -p.y)
         })
@@ -79,45 +80,61 @@ async function ice() {
 
 function leaves() {
     if (!drink.mint) return
+
     const sumLeaves = findNumberInString(drink.mint) ?? 4
-    for (let t = 0; t < sumLeaves; t++) {
-        const leafLength = random(50, 100)*PS
-        const leafWidth = map(leafLength, 50, 100, 10, 20)*PS
-        const leafPos = P(random(-liquidPath.bounds.right, liquidPath.bounds.right), random(liquidPath.bounds.top, liquidPath.bounds.bottom))
-        const leafDirection = pointFromAngle(random(360)).multiply(leafLength / 2)
-
-        const leafCenterPath = new Path([
-            leafPos, leafPos.add(leafDirection), leafPos.add(leafDirection).add(leafDirection.rotate(-30))
-        ])
-        leafCenterPath.smooth()
-
-        const rightSidePath = new Path()
-        const leftSidePath = new Path()
-        let counter = 0
-        for (let i = 0; i < leafCenterPath.length; i += 5) {
-            const loc = leafCenterPath.getLocationAt(i)
-            const d = 1 - abs(i - leafCenterPath.length / 2) / (leafCenterPath.length / 2)
-            const l = ((counter++) % 2 == 0 ? leafWidth : leafWidth - 5*PS)
-            rightSidePath.add(loc.point.add(loc.normal.multiply(l * d)))
-            leftSidePath.add(loc.point.subtract(loc.normal.multiply(l * d)))
+    if (findWordInString(drink.mint, 'floating')) {
+        const liquidCorner = liquidPath.segments[liquidPath.segments.length - 2].point
+        const pos = P((liquidCorner.x - 30 * PS) * random(-1, 1), liquidCorner.y)
+        for (let t = 0; t < sumLeaves; t++) {
+            const leafLength = 50 * PS
+            const leafWidth = 10 * PS
+            const leafDirection = pointFromAngle(random(45, 135), leafLength / 2)
+            addLeaf(pos, leafDirection, leafWidth, leafLength)
         }
-        leftSidePath.reverse()
+    } else {
+        for (let t = 0; t < sumLeaves; t++) {
+            const leafLength = random(20, 50) * PS
+            const leafWidth = map(leafLength, 20, 50, 5, 10) * PS
+            const leafPos = P(random(-liquidPath.bounds.right, liquidPath.bounds.right), random(liquidPath.bounds.top, liquidPath.bounds.bottom))
+            const leafDirection = pointFromAngle(random(360)).multiply(leafLength / 2)
 
-        leafPath = rightSidePath.join(leftSidePath)
-        leafPath.smooth()
-        leafPath = leafPath.intersect(fullInnerPath)
-        if (!leafPath || leafPath.length == 0) continue
-        new DrinkElement(leafPath, throughData => {
-            const p = throughData.point
-            const clr = lerpColor(color('#007f00'), color('#005200'), throughData.perc)
-            if (throughData.inLiquid) {
-                const val = (noise(p.x / 70*PS + 400, p.y / 70*PS + 400) + .2) * (.5 - abs(throughData.perc - .5)) * 200
-                clr.setAlpha(val * .1)
-            }
-            stroke(clr)
-            line(p.x, -p.y, p.x, -p.y)
-        })
+            addLeaf(leafPos, leafDirection, leafWidth, leafLength)
+        }
     }
+}
+
+async function addLeaf(leafPos, leafDirection, leafLength, leafWidth) {
+    const leafCenterPath = new Path([
+        leafPos, leafPos.add(leafDirection), leafPos.add(leafDirection).add(leafDirection.rotate(-30))
+    ])
+    leafCenterPath.smooth()
+
+    const rightSidePath = new Path()
+    const leftSidePath = new Path()
+    let counter = 0
+    for (let i = 0; i < leafCenterPath.length; i += 5) {
+        const loc = leafCenterPath.getLocationAt(i)
+        const d = 1 - abs(i - leafCenterPath.length / 2) / (leafCenterPath.length / 2)
+        const l = ((counter++) % 2 == 0 ? leafWidth : leafWidth - 5 * PS)
+        rightSidePath.add(loc.point.add(loc.normal.multiply(l * d)))
+        leftSidePath.add(loc.point.subtract(loc.normal.multiply(l * d)))
+    }
+    leftSidePath.reverse()
+
+    leafPath = rightSidePath.join(leftSidePath)
+    leafPath.smooth()
+    leafPath = leafPath.intersect(fullInnerPath)
+    if (!leafPath || leafPath.length == 0) return
+    new DrinkElement(leafPath, throughData => {
+        const p = throughData.point
+        const clr = lerpColor(color('#007f00'), color('#005200'), throughData.perc)
+        if (throughData.inLiquid) {
+            const val = (noise(p.x / 70 * PS + 400, p.y / 70 * PS + 400) + .2) * (.5 - abs(throughData.perc - .5)) * 200
+            clr.setAlpha(val * .1)
+        }
+        stroke(clr)
+        line(p.x, -p.y, p.x, -p.y)
+    })
 }
 
 let drinkElements = []
@@ -151,7 +168,7 @@ function drawInLiquid(clr) {
     return slicePath => {
         through(slicePath, throughData => {
             const p = throughData.point
-            let val = (noise(p.x / 70*PS + 400, p.y / 70*PS + 400) + .2) * (.5 - abs(throughData.perc - .5)) * 200
+            let val = (noise(p.x / 70 * PS + 400, p.y / 70 * PS + 400) + .2) * (.5 - abs(throughData.perc - .5)) * 200
             if (throughData.inLiquid) val *= .1
             clr.setAlpha(val)
             stroke(clr)

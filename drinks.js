@@ -10,11 +10,11 @@ function initDrink() {
     }
     const base = {
         glassType: choose(['highball', 'old fashioned', 'martini', 'wine', 'margarita', 'cocktail']),
-        frost: random(),
+        frost: random() ** 2,
         bubbles: random() < 0.5 ? false : random(30, 500),
         ice: random() < 0.5 ? 0 : round_random(1, 4),
         top: random() < 0.5 ? false : choose(['foam', 'bubbles', 'smoke']),
-        mint: random() < 0.5 ? 0 : round_random(1, 4),
+        mint: choose([false, 'floating ']) + (random() < 0.5 ? 0 : round_random(1, 4)),
         stick: random() < 0.5 ? false : choose(['straw', 'stirrer', 'umbrella']),  // spoon?
         fruit: random() < .5 ? false : gerRandomFruit(),
         rim: random() < 0.2,
@@ -91,7 +91,7 @@ function initDrink() {
         gin_tonic: {
             glassType: choose(['highball', 'old fashioned']),
             name: ['Gin & Tonic'],
-            frost: random(),
+            frost: random(), bubbles: 150,
             ice: 5, fruit: 'lemon wedge',
             liquid: getColors(['white', 'white'], 50)
         },
@@ -136,7 +136,7 @@ function initDrink() {
         },
         gin_fizz: {
             glassType: 'highball', name: ['Gin Fizz'], frost: random(.5, 1),
-            foam: true, fruit: choose([false, 'lemon wedge']),
+            foam: true, fruit: choose([false, 'lemon wedge']), bubbles: 200,
             liquid: getColors(['white', 'yellow'], 50)
         },
         kir_royale: {
@@ -155,7 +155,7 @@ function initDrink() {
         },
         espresso_tonic: {
             name: ['Espresso & Tonic'], glassType: 'highball',
-            liquid: getColors(['white', 'brown'], 50),
+            liquid: getColors(['white', 'brown'], 120),
             fruit: 'lemon wedge', ice: '10 small', stick: 'straw'
         },
         whiskey_sour: {
@@ -179,12 +179,12 @@ function initDrink() {
         },
         paloma: {
             name: ['Paloma'], glassType: 'highball',
-            ice: '10 small', liquid: getColors(['pink', 'orange'], 50),
+            ice: '15 crushed', liquid: getColors(['pink', 'orange'], 50),
             fruit: 'orange slice', bubbles: 100, rim: true
         },
         gold_rush: {
             name: ['Gold Rush'], glassType: 'old fashioned',
-            ice: '1 large', liquid: getColors(['orange', 'amber', 'amber'], 120),
+            ice: '1 large', liquid: getColors(['yellow', 'orange', 'yellow'], 120),
             fruit: 'lemon peel & wedge', rim: true
         },
         caipirinha: {
@@ -194,15 +194,15 @@ function initDrink() {
         },
         pina_colada: {
             name: ['Piña Colada'], glassType: 'cocktail',
-            ice: '10 small', liquid: getColors(['white', 'yellow', 'yellow']),
-            stick: 'umbrella & straw', fruit: 'floating cherry', rim: true
+            ice: '15 crushed', liquid: getColors(['white', 'yellow', 'yellow']),
+            stick: 'umbrella', fruit: 'floating cherry', rim: true
         },
         hemmingway: {
             name: ['Hemmingway', 'Dacquiri'], glassType: 'martini',
             fruit: 'lemon slice', bubbles: 100, liquid: getColors(['pink', 'yellow', 'pink']),
         },
         vieux_carre: {
-            name: ['Vieux Carre'], glassType: 'old fashioned',
+            name: ['Vieux Carré'], glassType: 'old fashioned',
             ice: 3, liquid: getColors(['amber', 'yellow'], 100),
             fruit: 'lemon peel slice'
         },
@@ -210,14 +210,55 @@ function initDrink() {
             name: ['Fjellbekk'], glassType: 'highball',
             ice: '10 small', liquid: getColors(['white', 'yellow'], 50),
             fruit: 'lemon wedge', bubbles: 100, rim: random() < 0.5
-        }
+        },
+        mimosa: {
+            name: ['Mimosa'], glassType: 'wine',
+            ice: '3 crushed', liquid: getColors(['orange', 'yellow'], 255),
+            fruit: 'orange slice && rim cherry', bubbles: 100,
+        },
+        moscow_mule: {
+            name: ['Moscow Mule'], glassType: 'highball',
+            ice: '10 small', liquid: getColors(['white', 'yellow', 'yellow'], 100),
+            fruit: 'lime wedge', mint: 10, stick: 'straw'
+        },
+        merlot: {
+            name: ['Merlot'], glassType: 'wine', liquid: getColors(['purple', 'red'], 255),
+        },
+        aperol_spritz: {
+            name: ['Aperol Spritz'], glassType: 'margarita',
+            ice: 3, mint: 3, rim: true, fruit: choose(['orange wedge', 'orange slice']),
+            liquid: getColors(['red', 'pink'], 150), stick: 'straw'
+        },
+        mai_tai: {
+            name: ['Mai Tai'], glassType: choose(['old fashioned', 'cocktail']),
+            ice: '10 crushed', mint: 10, fruit: choose(['lemon slice', 'lemon wedge']) + " & cherry",
+            liquid: getColors(['yellow', 'yellow', 'yellow', 'red'], 150), stick: 'umbrella'
+        },
+        gimlet: {
+            name: ['Gimlet'], glassType: 'martini',
+            ice: 3, mint: 3, rim: true, fruit: choose(['rim lemon wedge', 'lemon slice']),
+            liquid: getColors(['green', 'yellow'], 100)
+        },
+        corpse_reviver: {
+            name: ['Corpse', 'Reviver'], glassType: 'martini', ice: '3 small',
+            fruit: 'lemon wedge & sinking olive', bubbles: 30, liquid: getColors(['green', 'yellow', 'yellow'], 150),
+        },
+        bloody_mary: {
+            name: ['Bloody Mary'], glassType: 'highball',
+            ice: '10 small', liquid: getColors(['red', 'red', 'red'], 255),
+            fruit: 'lemon wedge', stick: 'straw', rim: true
+        },
+        creme_de_menthe: {
+            name: ['Creme de Menthe'], glassType: 'martini',
+            ice: 3, mint: 3, rim: true, fruit: choose(['lemon wedge', 'lemon slice']),
+            liquid: getColors(['green', 'green', 'green'], 255)
+        },
+
     }
 
-
-
-    if (random() < 0.2) drink = { ...drink, ...choose(Object.values(drinks)) }
+    if (random() < .2) drink = { ...drink, ...choose(Object.values(drinks)) }
+    // drink = { ...drink, ...drinks.mimosa }
     if (!drink.name) drink = { ...drink, ...base }
-    drink.fruit = 'lemon wedge'
 }
 
 
@@ -234,6 +275,17 @@ const drinkColors = {
     'blue': ['#05B6EE', '#0257BD', '#4AC7E1', '#0257C7'],
     'purple': ['#95395C', '#967D9D', '#49487E', '#661D6D'],
     'black': ['#000000', '#000000', '#000000', '#000000'],
+}
+
+const hues = {
+    'blue' : [199,253],
+    'orange' : [9, 33],
+    'red' : [354, 360],
+    'yellow' : [41, 64],
+    'amber' : [15, 30],
+    'pink' : [311, 330],
+    'green' : [86, 142],
+    'purple' : [267, 288],
 }
 
 const colorPresets = {
@@ -261,14 +313,23 @@ function getRandomColors(preset) {
         const hueNames = Object.keys(drinkColors)
         hueNames.sort(() => random() - 0.5)
         colors = hueNames.slice(0, sumColors)
-        colors = colors.map(hue => drinkColors[hue])
+        colors = colors.map(hue => {
+            if (hue in hues) {
+                const res = []
+                for (let i = 0; i < 5; i++) {
+                    const h = random(hues[hue][0], hues[hue][1])
+                    res.push(makeHSBColor(h, 100, 100))
+                }
+                return res
+            } else return drinkColors[hue]
+        })
         colors = colors.flat()
         colors.sort(() => random() - 0.5)
         colors = colors.slice(0, 3)
     }
 
     colors = colors.map(clr => color(clr))
-    const alpha = random(0, 255)
+    const alpha = random(50, 255)
     colors.forEach(clr => clr.setAlpha(alpha))
     return colors
 }
@@ -283,4 +344,18 @@ function gerRandomFruit() {
         result += " " + choose(['floating', 'skewed', 'sinking'])
     }
     return result
+}
+
+function makeHSBColor(h,s,b) {
+    colorMode(HSB)
+    const clr = color(h, s, b)
+    colorMode(RGB)
+    return clr
+}
+
+function setHSB(clr, h, s, b) {
+    colorMode(HSB)
+    const clr2 = color(h ?? hue(clr), s ?? saturation(clr), b ?? brightness(clr))
+    colorMode(RGB)
+    return clr2
 }

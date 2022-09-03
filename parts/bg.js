@@ -1,5 +1,5 @@
 const gradients = [
-    ['#F75050', '#EECB4F', '#FE3D6C'],
+    ['#F75050', '#EECB4F', '#EECB4F', '#FE3D6C'],
     ['#8886FF', '#31C7F7', '#FBF3AC', '#B9FF83'],
     ['#E0D4BD', '#D93B57', '#D9443B', '#E0D4BD'],
     ['#A89C85', '#E8C992', '#F4C46A', '#FFEB83'],
@@ -43,7 +43,7 @@ topOptions = [
 async function makeBG() {
     drawbg()
 
-    const bgType = random() < 0.3 ? false : choose(['clouds', 'checkerboard', 'jelly', 'umbrellas', 'monstera'])
+    const bgType = random() < 0.5 ? false : choose(['clouds', 'checkerboard', 'jelly', 'umbrellas', 'monstera'])
     const withMirror = random() < .8
 
     if (bgType == 'monstera') await bgElements(PS * 100, async pos => await monstera(pos))
@@ -61,10 +61,16 @@ async function makeBG() {
 function addDrinkName() {
     if (drink.name) {
         let textPos = PS * 25
-        blendMode(DODGE)
+        // let textPos = height / 2
+        // blendMode(DODGE)
+        // const topColor = bgColors.top[bgColors.top.length-2]
+        // colorMode(HSB)
+        // const textColor = color(hue(drink.liquid[0]), saturation(drink.liquid[0]), (brightness(topColor)+50)%100)
+        // colorMode(RGB)
+        const textColor = color(red(drink.liquid[0]), green(drink.liquid[0]), blue(drink.liquid[0]))
+        fill(textColor)
         for (word of drink.name) {
             noStroke()
-            fill(drink.liquid[0])
             // textLeading(0);
             textFont(myFont)
             textSize(PS * 15)
@@ -72,22 +78,31 @@ function addDrinkName() {
             while (textWidth(word) < width * .92) {
                 textSize(textSize() + PS * 1)
             }
+            print(textSize())
             text(word, width * .5, textPos)
             textPos += textSize()
         }
-        blendMode(BLEND)
+        // blendMode(BLEND)
     }
 }
 
 
 function getBG_Gradient(remix = false) {
     if (remix) {
-        bgColors.bottom.sort((a, b) => random() > .5 ? -1 : 1),
-            bgColors.top.sort((a, b) => random() > .5 ? -1 : 1)
+        if (random() < 0.3) {
+            const temp = [...bgColors.top]
+            bgColors.top = [...bgColors.bottom]
+            bgColors.bottom = [...temp]
+        }
+        bgColors.bottom.sort((a, b) => random() > .5 ? -1 : 1)
+        bgColors.top.sort((a, b) => random() > .5 ? -1 : 1)
     } else {
+        const grad = choose(gradients)
         bgColors = {
-            bottom: [...choose(gradients)].sort((a, b) => random() > .5 ? -1 : 1).slice(0, 3),
-            top: [...choose(gradients)].sort((a, b) => random() > .5 ? -1 : 1).slice(0, 3)
+            bottom: grad.slice(0, floor(grad.length / 2)),
+            top: grad.slice(floor(grad.length / 2))
+            // bottom: [...choose(gradients)].sort((a, b) => random() > .5 ? -1 : 1).slice(0, 3),
+            // top: [...choose(gradients)].sort((a, b) => random() > .5 ? -1 : 1).slice(0, 3)
         }
     }
     const gradHorOff = random() < .2 ? width * random(.5, .8) : width * .5
@@ -148,7 +163,7 @@ async function glassShadow_curtain() {
 
 async function glassShadow() {
     let color1 = color(bgColors.bottom[0])
-    let color2 = color(bgColors.bottom[2])
+    let color2 = color(bgColors.bottom[1])
 
     const brghtnessOffset = brightness(bgColors.bottom[0]) < 50 ? 50 : -50;
 

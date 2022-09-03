@@ -187,9 +187,9 @@ async function fruit_wedge() {
     let sliceGroup = [fullSlicePath, sliceInner, ...sliceSlices]
     let pos = P(0, 0)
 
-    let placing = choose(['rim', 'floating', 'sinking'])
+    let placing = choose(['floating', 'sinking'])
     if (findWordInString(drink.fruit, 'rim')) placing = 'rim'
-    if (findWordInString(drink.fruit, 'floawing')) placing = 'floating'
+    if (findWordInString(drink.fruit, 'floating')) placing = 'floating'
     if (findWordInString(drink.fruit, 'sinking')) placing = 'sinking'
     if (placing == 'rim')
         pos = getPointOnRevolved(path, path.length, random(360))
