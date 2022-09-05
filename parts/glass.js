@@ -166,6 +166,7 @@ class glassPath extends Path {
 }
 
 function initPaths() {
+    resetRandom()
     path = new glassPath()
     path.init(1)
     innerPath = path.getInnerPath()
@@ -189,7 +190,7 @@ function initPaths() {
     innerBaseEllipse.scale(1, getPerspective(innerFirst.y))
     fullInnerPath = fullInnerPath.unite(innerBaseEllipse)
 
-    const specialPatternSum = new Chance({ 0: 10, 1: 6, 2: 2, 3: 1 }).get()
+    const specialPatternSum = new Chance({ 0: 10, 1: 3, 2: 4, 3: 1 }).get()
     specialPatterns = Array(specialPatternSum).fill(0).map(_ => getRandomSpecialPattern())
 
     stickData = {
@@ -213,7 +214,7 @@ async function glassBubble() {
 
 
 const highlights = [
-    { pos: random(30, 80), width: random(10,50), strength: .7, noiseSize: 100, noiseOffset: random(100) },
+    { pos: random(30, 80), width: random(10, 50), strength: .7, noiseSize: 100, noiseOffset: random(100) },
     // { pos: random(90, 170), width: random(50, 100), strength: .4, noiseSize: 100, noiseOffset: random(100) },
     { pos: 0, width: 50, strength: .5, noiseSize: 25, noiseOffset: random(100) },
     { pos: 180, width: 50, strength: .5, noiseSize: 25, noiseOffset: random(100) }
@@ -222,7 +223,7 @@ const highlights = [
 
 let glassColor1, glassColor2
 async function drawGlass(path, frontOrBack) {
-
+    resetRandom()
     glassColor1 = glassColor1 ?? color(choose(bgColors.bottom))
     glassColor2 = glassColor2 ?? color(choose(bgColors.top))
 
@@ -243,7 +244,7 @@ async function drawGlass(path, frontOrBack) {
 
         const pathY = path.getPointAt(pathIndex).y
         const innerReflection = pathY < innerPath.bounds.top ? pathY / innerPath.bounds.top : 1
-        for (let i = 0; i < pathToDraw.length; i += .2) {
+        for (let i = 0; i < pathToDraw.length; i += .2 * PS) {
             const loc = pathToDraw.getLocationAt(i)
             const p = loc.point
             const angle = (loc.normal.angle + 720 - 180 + drink.frost * random(-7, 7)) % 180
@@ -256,17 +257,15 @@ async function drawGlass(path, frontOrBack) {
             stroke(clr)
             drawDot(p)
 
-            if (innerReflection < 1) {
-                const i2 = constrain(i + noise(p.x / 30 * PS, p.y / 30 * PS) * 150 - 75, 0, pathToDraw.length)
-                const distFromEdges = abs(i2 - ellipsePath.length / 4) / (ellipsePath.length / 4)
-                stroke(0, (1 - innerReflection) * 2 * distFromEdges)
+            const i2 = constrain(i + noise(p.x / 30 * PS, p.y / 30 * PS) * 150 - 75, 0, pathToDraw.length)
+            const distFromEdges = abs(i2 - ellipsePath.length / 4) / (ellipsePath.length / 4)
+            stroke(0, (1 - innerReflection) * 2 * distFromEdges)
+            drawDot(p)
+            if (distFromEdges < .9) {
+                const liquidColor = drink.liquid[1]
+                liquidColor.setAlpha(random(.15) * (.5 - abs(innerReflection - 0.5)))
+                stroke(liquidColor)
                 drawDot(p)
-                if (distFromEdges < .9) {
-                    const liquidColor = drink.liquid[1]
-                    liquidColor.setAlpha(random(.15) * (.5 - abs(innerReflection - 0.5)))
-                    stroke(liquidColor)
-                    drawDot(p)
-                }
             }
 
             highlights.forEach(h => {
@@ -276,7 +275,7 @@ async function drawGlass(path, frontOrBack) {
                     const n2 = noise(p.x / h.noiseSize + h.noiseOffset, p.y / h.noiseSize + h.noiseOffset) + .5
                     strokeWeight(PS * (n2 * 2 * s + random(drink.frost / 3)))
 
-                    stroke(255, map(innerReflection, 0, 1, 6, 75) * s)
+                    stroke(255, map(innerReflection, 0, 1, 10, 75) * s)
                     drawDot(p)
                 }
             })
@@ -355,6 +354,7 @@ function getRandomSpecialPattern() {
 const sunHorizontal = random()
 const sunHeight = random(.5, 1)
 async function sun() {
+    resetRandom()
     const target = path.bounds.height * sunHeight
     await revolve(path, async (ellipsePath, pathIndex) => {
         ellipsePath.splitAt(ellipsePath.length * .5)

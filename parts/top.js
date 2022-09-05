@@ -5,6 +5,7 @@ async function liquidTop() {
 }
 
 async function foam() {
+    resetRandom()
     const foamPath = innerPath.clone()
     foamPath.splitAt(min(foamPath.length * (liquidLevel + random(.1)), foamPath.length - 1))
     foamPath.add(P(0, foamPath.lastSegment.point.y + random(30)))
@@ -25,6 +26,7 @@ async function foam() {
 }
 
 async function drawFoamBubbles() {
+    resetRandom()
     for (let t = 0; t < 70; t++) {
         const bubblePos = P(
             random(-liquidPath.bounds.right, liquidPath.bounds.right),
@@ -55,6 +57,7 @@ async function drawFoamBubbles() {
 }
 
 async function rim(frontOrBack) {
+    resetRandom()
     if (!drink.rim) return
     const rimPath = path.clone().splitAt(path.length - random(10, 20))
     await revolve(rimPath, async (ellipsePath, pathIndex) => {
@@ -77,6 +80,7 @@ async function rim(frontOrBack) {
 }
 
 async function smoke() {
+    resetRandom()
     const liquidTop = liquidPath.segments[liquidPath.segments.length - 2].point
     for (let i = 0; i < 500; i++) {
         const p = P(liquidTop.x * random(-.6, .6), -liquidTop.y - random(100)*PS)

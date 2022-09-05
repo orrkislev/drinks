@@ -1,5 +1,6 @@
 function bubbles() {
     if (!drink.bubbles) return
+    resetRandom()
 
     let sumBubbles = 0
     if (typeof drink.bubbles == 'number') sumBubbles = drink.bubbles
@@ -57,6 +58,7 @@ function bubbles() {
 
 async function ice() {
     if (!drink.ice) return
+    resetRandom()
     const sumIce = findNumberInString(drink.ice)
     let iceSize = 35
     if (findWordInString(drink.ice, 'large')) iceSize = 60 * PS
@@ -80,7 +82,7 @@ async function ice() {
 
 function leaves() {
     if (!drink.mint) return
-
+    resetRandom()
     const sumLeaves = findNumberInString(drink.mint) ?? 4
     if (findWordInString(drink.mint, 'floating')) {
         const liquidCorner = liquidPath.segments[liquidPath.segments.length - 2].point

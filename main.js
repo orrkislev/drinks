@@ -1,5 +1,5 @@
 let PERSPECTIVE = 1 / 8
-const usePerespective = random()<0.5
+const usePerespective = random() < 0.5
 
 async function makeImage() {
     initDrink()
@@ -7,7 +7,7 @@ async function makeImage() {
 
     await makeBG()
 
-    translate(width / 2, height / 2 + 200*PS)
+    translate(width / 2, height / 2 + 200 * PS)
 
 
     await glassShadow()
@@ -26,7 +26,6 @@ async function makeImage() {
     await drawDrinkElements()
 
     await fruit()
-
 
     await drawGlass(path, 'front')
     await sun()
@@ -72,7 +71,7 @@ async function revolve(path, drawFunc, translationFunc = (p) => P(0, p.y)) {
 }
 
 function getPerspective(y) {
-    return usePerespective ? map(y, 0, 350, 0.18, 0) : 0
+    return usePerespective ? map(y, 0, 350 * PS, 0.18, 0) : 0
 }
 
 function getPointOnRevolved(path, offset, angle) {
@@ -93,7 +92,7 @@ function getPointOnRevolved(path, offset, angle) {
 //------------------------------------------------------
 async function pointilizePath(path, func = () => { }) {
     for (let h = path.bounds.top; h < path.bounds.bottom; h += .5) {
-        const l = new Path.Line(P(-width, h), P(width, h))
+        const l = new Path.Line(P(-width*2, h), P(width*2, h))
         const pathintersections = path.getIntersections(l)
         if (pathintersections.length > 1) {
             for (let i = 0; i < pathintersections.length - 1; i += 2) {

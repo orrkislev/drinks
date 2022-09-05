@@ -1,5 +1,6 @@
 
 async function drawLiquid() {
+    resetRandom()
     // colorMode(HSB)
     // const liquidLayers = [
     //     { perc: 0, color: drink.liquid[0] },

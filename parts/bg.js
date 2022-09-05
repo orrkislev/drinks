@@ -41,6 +41,7 @@ topOptions = [
 
 
 async function makeBG() {
+    resetRandom()
     drawbg()
 
     const bgType = random() < 0.5 ? false : choose(['clouds', 'checkerboard', 'jelly', 'umbrellas', 'monstera'])
@@ -162,6 +163,7 @@ async function glassShadow_curtain() {
 }
 
 async function glassShadow() {
+    resetRandom()
     let color1 = color(bgColors.bottom[0])
     let color2 = color(bgColors.bottom[1])
 

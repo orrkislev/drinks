@@ -8,7 +8,7 @@ const CurveLocation = paper.CurveLocation
 const DIRS = { UP: new Point(0, -1), DOWN: new Point(0, 1), LEFT: new Point(-1, 0), RIGHT: new Point(1, 0) }
 const P = (x, y) => new Point(x, y)
 const randomPoint = () => new Point(random(-1, 1), random(-1, 1)).normalize()
-const pointFromAngle = (angle,size=1) => new Point(1, 0).rotate(angle).multiply(size)
+const pointFromAngle = (angle, size = 1) => new Point(1, 0).rotate(angle).multiply(size)
 const positiveAngle = (angle) => angle > 0 ? angle : angle + 360
 
 paper.Path.prototype.getSection = function (from, to) {
@@ -104,9 +104,9 @@ paper.Path.prototype.waterColor = function (clr, mask, group) {
             let newShape = base.clone().deform(2)
 
             // if (blob) {
-                const newnewShape = newShape.intersect(mask)
-                newShape.remove()
-                newShape = newnewShape
+            const newnewShape = newShape.intersect(mask)
+            newShape.remove()
+            newShape = newnewShape
             // }
             const otherColor = new paper.Color(clr)
             otherColor.alpha = .2
@@ -176,9 +176,9 @@ function getOrderedIntersections(path, paths) {
     if (!paths) paths = paper.project.activeLayer.children
     let intersections = []
     paths.forEach(p => {
-        if (p.strokeColor==null) return
+        if (p.strokeColor == null) return
         if (p instanceof Path || p instanceof CompoundPath)
-            intersections.push(path.getIntersections(p, intersection => intersection.offset > 3 && intersection.offset < path.length - 3))
+            intersections.push(path.getIntersections(p, intersection => intersection.offset > 3 && intersection.offset < path.length - 3 * PS))
     })
     intersections = intersections.flat()
     intersections.sort((a, b) => a.offset - b.offset)

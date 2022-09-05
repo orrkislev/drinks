@@ -5,7 +5,6 @@
     //---- do not edit the following code (you can indent as you wish)
     let alphabet = "123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ"
     var fxhash = "oo" + Array(49).fill(0).map(_=>alphabet[(Math.random()*alphabet.length)|0]).join('')
-    // fxhash = "oodLpwkPRdPmPFBPQFpQReXZ54Kwyvo2VdkWvzC5Ey41Kn6iuXD"
     let b58dec = str=>[...str].reduce((p,c)=>p*alphabet.length+alphabet.indexOf(c)|0, 0)
     let fxhashTrunc = fxhash.slice(2)
     let regex = new RegExp(".{" + ((fxhashTrunc.length/4)|0) + "}", 'g')
@@ -28,6 +27,11 @@
       console.log("fxhash: TRIGGER PREVIEW")
     }
     //---- /do not edit the following code
+    const resetFxRand = (times=0)=> {
+      hashes = fxhashTrunc.match(regex).map(h => b58dec(h))
+      fxrand = sfc32(...hashes)
+      for (let i=0;i<times;i++) fxrand()
+    }
   </script>
 
   <script language="javascript" type="text/javascript" src="./library/paper-full.min.js"></script>

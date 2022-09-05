@@ -1,4 +1,5 @@
 function initDrink() {
+    resetRandom()
     drink = {
         glassType: 'old fashioned', frost: 0,
         glassRidges: random() < .7 ? 0 : round_random(15, 30),
@@ -203,7 +204,7 @@ function initDrink() {
         },
         vieux_carre: {
             name: ['Vieux Carré'], glassType: 'old fashioned',
-            ice: 3, liquid: getColors(['amber', 'yellow'], 100),
+            ice: 3, liquid: getColors(['amber', 'amber'], 100),
             fruit: 'lemon peel slice'
         },
         fjellbekk: {
@@ -257,7 +258,7 @@ function initDrink() {
     }
 
     if (random() < .2) drink = { ...drink, ...choose(Object.values(drinks)) }
-    // drink = { ...drink, ...drinks.mimosa }
+    // drink = { ...drink, ...drinks.manhattan }
     if (!drink.name) drink = { ...drink, ...base }
 }
 
@@ -335,7 +336,7 @@ function getRandomColors(preset) {
 }
 
 function gerRandomFruit() {
-    let result = choose(['cherry', 'olive', 'lemon', 'orange', 'beach ball'])
+    let result = choose(['cherry', 'olive', 'lemon', 'orange', 'beach ball', 'shrimp'])
 
     if (['orange', 'lemon'].includes(result)) {
         result += " " + choose(['floating', 'rim', 'sinking'])

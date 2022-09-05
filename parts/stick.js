@@ -1,4 +1,5 @@
 async function stick() {
+    resetRandom()
     if (!drink.stick) return
     let startOffset = 0
     for (let i = 0; i < innerPath.length; i += 1) {
@@ -8,10 +9,14 @@ async function stick() {
         }
     }
     const start = getPointOnRevolved(innerPath, startOffset, stickData.startDir).add(0, 10*PS)
-    const end = getPointOnRevolved(path, path.length, stickData.endDir).add(0, 15*PS)
+    const end = getPointOnRevolved(path, path.length, stickData.endDir).add(0, 25*PS)
     end.x *= 0.9
     stickSpine = new Path.Line(start, end)
-    if (stickSpine.intersects(path)) stickSpine.lastSegment.point.x *= 0.6
+
+    const intersections = getOrderedIntersections(stickSpine, [innerPath])
+    if (intersections && intersections.find(inter=>inter.point.y > path.bounds.top)) stickSpine.lastSegment.point.x *= 0.6
+
+
     const extra = end.subtract(start).normalize(stickData.overboard)
     stickSpine.add(end.add(extra))
 
@@ -50,6 +55,7 @@ async function stick() {
 }
 
 async function umbrella() {
+    resetRandom()
     if (!findWordInString(drink.stick, 'umbrella')) return
     const umbrellaColors = [color(choose(bgColors.bottom)), choose([color(choose(bgColors.top)), color(255)])]
     const rotation = -stickSpine.lastSegment.location.normal.angle
