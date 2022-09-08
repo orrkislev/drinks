@@ -44,24 +44,47 @@ async function makeBG() {
     resetRandom()
     drawbg()
 
-    const bgType = random() < 0.5 ? false : choose(['clouds', 'checkerboard', 'jelly', 'umbrellas', 'monstera'])
+    bgType = random() < 0.5 ? false : choose(['clouds', 'checkerboard', 'jelly', 'umbrellas', 'monstera'])
     const withMirror = random() < .8
 
     if (bgType == 'monstera') await bgElements(PS * 100, async pos => await monstera(pos))
     if (bgType == 'clouds') await clouds()
-    if (bgType == 'jelly') await bgElements(PS * 100, async pos => await drawCherry(pos, 'cherry', { bg: true }))
+    if (bgType == 'jelly') {
+        const withStem = random() < 0.3
+        const jellyBeans = withStem ? false : random() < 0.5
+        await bgElements(PS * 100, async pos => await drawCherry(pos, 'cherry', { bg: true, stem: withStem, jelly: jellyBeans }))
+    }
     if (bgType == 'umbrellas') {
         const umbrellaColors = [color(choose(bgColors.bottom)), choose([color(choose(bgColors.top)), color(255)])]
-        await bgElements(PS * 100, async pos => await drawUmbrella(pos, PS * random(-30, 30), PS * 35, umbrellaColors))
+        await bgElements(PS * 100, async pos => await drawUmbrella(pos, PS * random(-30, 30), PS * random(20, 60), umbrellaColors))
     }
     if (withMirror) await mirror()
     if (bgType == 'checkerboard') checkerboard()
+    if (bgType == 'lightning') await lightning()
     addDrinkName()
 }
 
 function addDrinkName() {
     if (drink.name) {
-        let textPos = PS * 25
+        let textPos = PS * 10
+        textAlign(CENTER, TOP)
+        textFont(myFont)
+
+        if (drink.ingredients.length > 1) {
+            const txt = drink.ingredients.join(' · ')
+            textSize(PS * 2)
+            while (textWidth(txt) < width * .90) {
+                textSize(textSize() + PS * .5)
+            }
+            const topGradColor = bgColors.top[bgColors.top.length - 1]
+            const offset = brightness(topGradColor) > 127 ? -40 : 40
+            const ingredientColor = color(red(drink.liquid[0]), green(drink.liquid[0]), blue(drink.liquid[0]))
+            ingredientColor.setAlpha(100)
+            // const ingredientColor = color(red(topGradColor) + offset, green(topGradColor) + offset, blue(topGradColor) + offset)
+            fill(ingredientColor)
+            text(txt, width * .5, textPos)
+            textPos += textSize() * .8
+        }
         // let textPos = height / 2
         // blendMode(DODGE)
         // const topColor = bgColors.top[bgColors.top.length-2]
@@ -73,15 +96,12 @@ function addDrinkName() {
         for (word of drink.name) {
             noStroke()
             // textLeading(0);
-            textFont(myFont)
             textSize(PS * 15)
-            textAlign(CENTER, TOP)
             while (textWidth(word) < width * .92) {
-                textSize(textSize() + PS * 1)
+                textSize(textSize() + PS * .5)
             }
-            print(textSize())
             text(word, width * .5, textPos)
-            textPos += textSize()
+            textPos += textSize() * .8
         }
         // blendMode(BLEND)
     }
@@ -174,16 +194,19 @@ async function glassShadow() {
     color2 = color(hue(color2), saturation(color2), brightness(color2) + brghtnessOffset)
     colorMode(RGB)
 
+    strokeWeight(1)
     await revolve(path, async (ellipse, pathIndex) => {
         const perc = pathIndex / (path.length - 1)
+        const h = path.getPointAt(pathIndex).y
         ellipse.position.y *= -1 * PS
         if (ellipse.position.y < -10 * PS) ellipse.position.y = min(ellipse.position.y + PS * 30, -10 * PS)
-
+        const alfa = map(h, 0, height / 2 - 200 * PS, 1, 0)
         for (let i = 0; i < ellipse.length; i += 1) {
             const loc = ellipse.getLocationAt(i)
             const p = loc.point
             const clr = lerpColor(color1, color2, perc)
-            clr.setAlpha(10 * random(1 - perc * perc))
+            // clr.setAlpha(10 * random(1 - perc * perc))
+            clr.setAlpha(10 * random(alfa))
             stroke(clr)
             const ll = 0//2 * perc
             drawDot(p, P(-random(ll), -random(ll)), P(random(ll), random(ll)))
@@ -224,7 +247,7 @@ async function glassShadow() {
             drawDot(p, P(-random(ll * 5), -random(ll)), P(random(ll * 5), random(ll)))
         }
         await timeout()
-    }, (p) => P(p.y / 2.5, 0))
+    }, (p) => P(p.y / 2.2, 0))
 
 }
 
@@ -413,4 +436,79 @@ async function monstera(pos) {
     fillPath(leafShape, color(choose(drinkColors.green)))
     await timeout()
 
+}
+
+async function lightning() {
+    stroke(255)
+
+    const lightning = new Path([P(width, 0), P(width / 2, height / 2)])
+    // lightning.segments.forEach((seg,segI)=>{
+    //     if (segI == 0 || segI == lightning.segments.length-1) return
+    //     seg.point = seg.point.add(seg.location.normal.multiply(random(-10,10)))
+    // })
+    // drawingContext.filter = 'blur(5px)'
+    await lightningBranch(lightning, 12)
+}
+
+async function lightningBranch(path, size) {
+    path.rebuild(round(path.length / 30))
+    path.segments.forEach((seg, segI) => {
+        if (segI == 0 || segI == path.segments.length - 1) return
+        seg.point = seg.point.add(seg.location.normal.multiply(size * random(-5, 5)))
+    })
+
+    stroke(255)
+    for (let i = 0; i < path.length; i++) {
+        const p = path.getPointAt(i)
+        strokeWeight(map(i, 0, path.length, size, 0))
+        line(p.x, p.y, p.x, p.y)
+    }
+
+    if (path.length > 150) {
+        for (let i = 0; i < path.length / 150; i++) {
+            const r = random(0.2, 0.8) * path.length
+            const loc = path.getLocationAt(r)
+            const newPath = new Path([loc.point, loc.point.add(loc.normal.multiply(path.length * random(0.2, 0.5)))])
+            await lightningBranch(newPath, map(r, 0, path.length, size, 0))
+        }
+    }
+
+}
+
+async function sideLeaf() {
+    if (random() < 0.95 || bgType) return
+    translate(width / 5, height / 10)
+    const sideLeaves = []
+    for (let i = 0; i < 2; i++) {
+        const leafWidth = random(10, 20) * PS
+        const leafDirection = pointFromAngle(random(60)).multiply(random(25, 50) * PS)
+        const leafPath = makeLeafPath(P(0, 0), leafDirection, leafWidth)
+        sideLeaves.push(leafPath)
+    }
+    strokeWeight(1)
+    for (let i = 0; i < sideLeaves.length; i++) {
+        await pointilizeDraw(sideLeaves[i], (throughData, val, valLiquid, sliceData) => {
+            stroke(0, abs(.5 - throughData.perc) * 10)
+            const p = throughData.point
+            line(p.x, p.y, p.x, p.y)
+            return false
+        })
+    }
+    for (let i = 0; i < sideLeaves.length; i++) {
+        await pointilizeDraw(sideLeaves[i], (throughData, val, valLiquid, sliceData) => {
+            stroke(0, abs(.5 - throughData.perc) * 10)
+            const p = throughData.point
+            line(p.y, p.x / 5, p.y, p.x / 5)
+            return false
+        })
+    }
+    for (let i = 0; i < sideLeaves.length; i++) {
+        const green1 = getColorFromHueName('green')
+        const green2 = getColorFromHueName('green')
+        await pointilizeDraw(sideLeaves[i], (throughData, val, valLiquid, sliceData) => {
+            let clr = lerpColor(green1, green2, abs(0.5 - throughData.perc) * 2)
+            clr = lerpColor(clr, color(0), noise(throughData.point.x / 10, throughData.perc * 5) * .5)
+            return clr
+        })
+    }
 }

@@ -49,9 +49,12 @@ async function drawCherry(pos, cherryOrOlive, data = {}) {
         pathToDraw = pathToDraw.rotate(random(90))
         lightVals = [.2, .3]
     }
+    if (data.jelly) pathToDraw = pathToDraw.scale(1,random(1.2,1.6)).rotate(random(90))
+    if (data.bg) pathToDraw = pathToDraw.scale(random(.7,1.3))
 
     if (!cherryColor) cherryColor = choose([color(40, 14, 20), color(200, 40, 60)])
     let clr = cherryOrOlive == 'cherry' ? cherryColor : color(10, 100, 40)
+    if (data.jelly) clr = getColorFromHueName(choose(Object.keys(drinkColors)))
 
     await pointilizePath(pathToDraw, (slicePath, sliceData) => {
         through(slicePath, 0, throughData => {

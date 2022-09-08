@@ -10,11 +10,13 @@ async function drawLiquid() {
 
     const liquidLayers = []
     drink.liquid.forEach((drinkColor, i) => {
-        liquidLayers.push({ perc: i / drink.liquid.length, color: drinkColor })
+        liquidLayers.push({ perc: i / drink.liquid.length, color: color(drinkColor.toString()) })
     })
-    const topColor = color(choose(bgColors.top))
-    topColor.setAlpha(alpha(drink.liquid[0]))
+    const topColor = color(drink.liquid[drink.liquid.length - 1].toString())
+    // const topColor = color(choose(bgColors.top))
+    // topColor.setAlpha(alpha(drink.liquid[0]))
     liquidLayers.push({ perc: 2, color: topColor })
+    print(liquidLayers)
 
     // const liquidLayers = [
     //     { perc: 0, color: color('brown') },
@@ -55,7 +57,7 @@ async function drawLiquid() {
             strokeWeight(2 * PS)
             const i2 = i % round(ellipsePath.length / 2)
             const distFromEdges = abs(i2 - ellipsePath.length / 4) / (ellipsePath.length / 4)
-            clr = lerpColor(clr, color(0, alpha(clr)), distFromEdges * (1 - heightPerc))
+            clr = lerpColor(clr, color(0), distFromEdges * (1 - heightPerc))
             clr.setAlpha(min((1 - heightPerc) * 75 + 75, alpha(clr)))
             stroke(clr)
             drawDot(p)

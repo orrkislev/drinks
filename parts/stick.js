@@ -59,7 +59,7 @@ async function umbrella() {
     if (!findWordInString(drink.stick, 'umbrella')) return
     const umbrellaColors = [color(choose(bgColors.bottom)), choose([color(choose(bgColors.top)), color(255)])]
     const rotation = -stickSpine.lastSegment.location.normal.angle
-    const pos = stickSpine.lastSegment.point
+    const pos = stickSpine.lastSegment.point.add(0, 5*PS)
     await drawUmbrella(pos,rotation,random(100,150)*PS,umbrellaColors)
 }
 

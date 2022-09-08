@@ -25,7 +25,7 @@ function bubbles() {
                 const p = throughData.point
 
                 let val = (noise(p.x / 70 * PS + 400, p.y / 70 * PS + 400) + .2) * (p.getDistance(bubblePath.position) / (2 * PS)) * 35
-                if (throughData.inLiquid) val *= .1
+                if (throughData.inLiquid) val *= .15
                 if (bubbleShape == 'seeds') val = random(10, 25)
 
                 bubbleColor.setAlpha(val)
@@ -47,7 +47,7 @@ function bubbles() {
                 const p = throughData.point
                 const distVal = (p.getDistance(bubblePath.position) / (bubblePath.bounds.width))
                 let val = (noise(p.x / 70 * PS + 400, p.y / 70 * PS + 400) + .2) * distVal * distVal * 35
-                if (throughData.inLiquid) val *= .1
+                if (throughData.inLiquid) val *= .15
                 bubbleColor.setAlpha(val)
                 stroke(bubbleColor)
                 line(p.x, -p.y, p.x, -p.y)
@@ -72,7 +72,7 @@ async function ice() {
         new DrinkElement(icePath, throughData => {
             const p = throughData.point
             let val = (noise(p.x / 70 * PS + 400, p.y / 70 * PS + 400) + .2) * (sin(180 * throughData.perc) + .3) * 150
-            if (throughData.inLiquid) val *= noise(p.x / 50 * PS + 800, p.y / 50 * PS + 800) * .1
+            if (throughData.inLiquid) val *= noise(p.x / 50 * PS + 800, p.y / 50 * PS + 800) * .25
             stroke(255, val)
             line(p.x, -p.y, p.x, -p.y)
         })
@@ -91,7 +91,7 @@ function leaves() {
             const leafLength = 50 * PS
             const leafWidth = 10 * PS
             const leafDirection = pointFromAngle(random(45, 135), leafLength / 2)
-            addLeaf(pos, leafDirection, leafWidth, leafLength)
+            addLeaf(pos, leafDirection, leafWidth)
         }
     } else {
         for (let t = 0; t < sumLeaves; t++) {
@@ -100,12 +100,29 @@ function leaves() {
             const leafPos = P(random(-liquidPath.bounds.right, liquidPath.bounds.right), random(liquidPath.bounds.top, liquidPath.bounds.bottom))
             const leafDirection = pointFromAngle(random(360)).multiply(leafLength / 2)
 
-            addLeaf(leafPos, leafDirection, leafWidth, leafLength)
+            addLeaf(leafPos, leafDirection, leafWidth)
         }
     }
 }
 
-async function addLeaf(leafPos, leafDirection, leafLength, leafWidth) {
+async function addLeaf(leafPos, leafDirection, leafWidth, bg=false) {
+    let leafPath = makeLeafPath(leafPos, leafDirection, leafWidth)
+
+    if (!bg) leafPath = leafPath.intersect(fullInnerPath)
+    if (!leafPath || leafPath.length == 0) return
+    new DrinkElement(leafPath, throughData => {
+        const p = throughData.point
+        const clr = lerpColor(color('#007f00'), color('#005200'), throughData.perc)
+        if (throughData.inLiquid && !bg) {
+            const val = (noise(p.x / 70 * PS + 400, p.y / 70 * PS + 400) + .2) * (.5 - abs(throughData.perc - .5)) * 200
+            clr.setAlpha(val * .15)
+        }
+        stroke(clr)
+        line(p.x, -p.y, p.x, -p.y)
+    })
+}
+
+function makeLeafPath(leafPos, leafDirection, leafWidth){
     const leafCenterPath = new Path([
         leafPos, leafPos.add(leafDirection), leafPos.add(leafDirection).add(leafDirection.rotate(-30))
     ])
@@ -125,19 +142,10 @@ async function addLeaf(leafPos, leafDirection, leafLength, leafWidth) {
 
     leafPath = rightSidePath.join(leftSidePath)
     leafPath.smooth()
-    leafPath = leafPath.intersect(fullInnerPath)
-    if (!leafPath || leafPath.length == 0) return
-    new DrinkElement(leafPath, throughData => {
-        const p = throughData.point
-        const clr = lerpColor(color('#007f00'), color('#005200'), throughData.perc)
-        if (throughData.inLiquid) {
-            const val = (noise(p.x / 70 * PS + 400, p.y / 70 * PS + 400) + .2) * (.5 - abs(throughData.perc - .5)) * 200
-            clr.setAlpha(val * .1)
-        }
-        stroke(clr)
-        line(p.x, -p.y, p.x, -p.y)
-    })
+    return leafPath
 }
+
+
 
 let drinkElements = []
 class DrinkElement {

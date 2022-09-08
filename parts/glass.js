@@ -226,6 +226,7 @@ async function drawGlass(path, frontOrBack) {
     resetRandom()
     glassColor1 = glassColor1 ?? color(choose(bgColors.bottom))
     glassColor2 = glassColor2 ?? color(choose(bgColors.top))
+    const liquidColor = color(drink.liquid[1].toString())
 
     funcTime = 0
 
@@ -262,7 +263,6 @@ async function drawGlass(path, frontOrBack) {
             stroke(0, (1 - innerReflection) * 2 * distFromEdges)
             drawDot(p)
             if (distFromEdges < .9) {
-                const liquidColor = drink.liquid[1]
                 liquidColor.setAlpha(random(.15) * (.5 - abs(innerReflection - 0.5)))
                 stroke(liquidColor)
                 drawDot(p)
@@ -291,7 +291,6 @@ async function drawGlass(path, frontOrBack) {
         funcTime += performance.now() - startTime
     })
     funcTime /= path.length
-    print(`${frontOrBack} glass time: ${funcTime.toFixed(2)}ms`)
 }
 
 function patternCrissCross(start, end, density) {

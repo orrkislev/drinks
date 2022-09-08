@@ -1,5 +1,5 @@
 let PERSPECTIVE = 1 / 8
-const usePerespective = random() < 0.5
+const usePerespective = true//random() < 0.5
 
 async function makeImage() {
     initDrink()
@@ -33,6 +33,8 @@ async function makeImage() {
 
     await umbrella()
 
+    await sideLeaf()
+
     resetMatrix()
 
     // noSmooth()
@@ -45,11 +47,13 @@ async function makeImage() {
     // image(shaderGraphics, 0, 0)
 
     fxpreview()
+    // save()
+    // setTimeout(()=>{ window.location.reload() } , 1000)
 }
 
 
 async function revolve(path, drawFunc, translationFunc = (p) => P(0, p.y)) {
-    for (let i = 0; i < path.length; i += 1) {
+    for (let i = 0; i < path.length; i += .8 * PS) {
         const pos = path.getPointAt(i)
         if (pos.x < 2) continue
         const ellipse = new Path.Ellipse({ center: P(0, 0), size: P(pos.x * 2, pos.x * 2) })
@@ -92,7 +96,7 @@ function getPointOnRevolved(path, offset, angle) {
 //------------------------------------------------------
 async function pointilizePath(path, func = () => { }) {
     for (let h = path.bounds.top; h < path.bounds.bottom; h += .5) {
-        const l = new Path.Line(P(-width*2, h), P(width*2, h))
+        const l = new Path.Line(P(-width * 2, h), P(width * 2, h))
         const pathintersections = path.getIntersections(l)
         if (pathintersections.length > 1) {
             for (let i = 0; i < pathintersections.length - 1; i += 2) {
