@@ -44,8 +44,8 @@ async function makeBG() {
     resetRandom()
     drawbg()
 
-    bgType = random() < 0.5 ? false : choose(['clouds', 'checkerboard', 'jelly', 'umbrellas', 'monstera'])
-    const withMirror = random() < .8
+    bgType = random() < 0.3 ? false : choose(['clouds', 'checkerboard', 'jelly', 'umbrellas', 'monstera', 'glasses'])
+    const withMirror = bgType==false ? random()<0.9 : random() < .5
 
     if (bgType == 'monstera') await bgElements(PS * 100, async pos => await monstera(pos))
     if (bgType == 'clouds') await clouds()
@@ -57,6 +57,9 @@ async function makeBG() {
     if (bgType == 'umbrellas') {
         const umbrellaColors = [color(choose(bgColors.bottom)), choose([color(choose(bgColors.top)), color(255)])]
         await bgElements(PS * 100, async pos => await drawUmbrella(pos, PS * random(-30, 30), PS * random(20, 60), umbrellaColors))
+    }
+    if (bgType == 'glasses') {
+        await bgElements(PS * 100, async pos => await drawSmallGlass(pos))
     }
     if (withMirror) await mirror()
     if (bgType == 'checkerboard') checkerboard()
@@ -70,28 +73,19 @@ function addDrinkName() {
         textAlign(CENTER, TOP)
         textFont(myFont)
 
+        const topGradColor = bgColors.top[bgColors.top.length - 1]
+        const offset = brightness(topGradColor) > 127 ? -40 : 40
+        const textColor = color(red(drink.liquid[0]) + offset, green(drink.liquid[0]) + offset, blue(drink.liquid[0]) + offset)
+        fill(255)
         if (drink.ingredients.length > 1) {
             const txt = drink.ingredients.join(' · ')
             textSize(PS * 2)
             while (textWidth(txt) < width * .90) {
                 textSize(textSize() + PS * .5)
             }
-            const topGradColor = bgColors.top[bgColors.top.length - 1]
-            const offset = brightness(topGradColor) > 127 ? -40 : 40
-            const ingredientColor = color(red(drink.liquid[0]), green(drink.liquid[0]), blue(drink.liquid[0]))
-            ingredientColor.setAlpha(100)
-            // const ingredientColor = color(red(topGradColor) + offset, green(topGradColor) + offset, blue(topGradColor) + offset)
-            fill(ingredientColor)
             text(txt, width * .5, textPos)
-            textPos += textSize() * .8
+            textPos += textSize() * .85
         }
-        // let textPos = height / 2
-        // blendMode(DODGE)
-        // const topColor = bgColors.top[bgColors.top.length-2]
-        // colorMode(HSB)
-        // const textColor = color(hue(drink.liquid[0]), saturation(drink.liquid[0]), (brightness(topColor)+50)%100)
-        // colorMode(RGB)
-        const textColor = color(red(drink.liquid[0]), green(drink.liquid[0]), blue(drink.liquid[0]))
         fill(textColor)
         for (word of drink.name) {
             noStroke()
@@ -101,7 +95,7 @@ function addDrinkName() {
                 textSize(textSize() + PS * .5)
             }
             text(word, width * .5, textPos)
-            textPos += textSize() * .8
+            textPos += textSize() * .85
         }
         // blendMode(BLEND)
     }
@@ -190,8 +184,8 @@ async function glassShadow() {
     const brghtnessOffset = brightness(bgColors.bottom[0]) < 50 ? 50 : -50;
 
     colorMode(HSB)
-    color1 = color(hue(color1), saturation(color1), brightness(color1) + brghtnessOffset)
-    color2 = color(hue(color2), saturation(color2), brightness(color2) + brghtnessOffset)
+    color1 = color(hue(color1), max(saturation(color1),50), brightness(color1) + brghtnessOffset)
+    color2 = color(hue(color2), max(saturation(color2),50), brightness(color2) + brghtnessOffset)
     colorMode(RGB)
 
     strokeWeight(1)
@@ -365,7 +359,8 @@ function mirror() {
         const border = random(50, 150) * PS
         mirrorRect = new Path.Rectangle({ point: P(border, border), size: P(width - border * 2, height - border * 2) })
     } else {
-        mirrorRect = new Path.Rectangle({ point: P(100 * PS, 100 * PS), size: P(300 * PS, 500 * PS) })
+        const h = height * random(.6,.9)
+        mirrorRect = new Path.Rectangle({ point: P(100 * PS, (height-h)/2), size: P(300 * PS, h) })
     }
 
     noStroke()

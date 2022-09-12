@@ -293,6 +293,31 @@ async function drawGlass(path, frontOrBack) {
     funcTime /= path.length
 }
 
+async function drawSmallGlass(pos){
+    resetRandom()
+    const scaleVal = PS * random(30,70) / path.bounds.height
+    const smallGlass = path.clone().scale(scaleVal)
+    smallGlass.position.x -= smallGlass.bounds.left
+    push()
+    translate(pos.x, -pos.y + 100)
+    rotate(random(-15,15))
+    // glassColor1 = glassColor1 ?? color(choose(bgColors.bottom))
+    // glassColor2 = glassColor2 ?? color(choose(bgColors.top))
+    stroke(0,100)
+    strokeWeight(PS)
+    let p
+    for (let i=0;i<smallGlass.length;i+=.5*PS){
+        p = smallGlass.getPointAt(i)
+        line(p.x,-p.y,p.x,-p.y)
+        line(-p.x,-p.y,-p.x,-p.y)
+    }
+    for (let x=p.x;x>0;x-=.5*PS){
+        line(x,-p.y,x,-p.y)
+        line(-x,-p.y,-x,-p.y)
+    }
+    pop()
+}
+
 function patternCrissCross(start, end, density) {
     return (pathToDraw, i, pathIndex, p) => {
         const pathY = path.getPointAt(pathIndex).y

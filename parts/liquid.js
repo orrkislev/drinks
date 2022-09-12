@@ -1,12 +1,6 @@
 
 async function drawLiquid() {
     resetRandom()
-    // colorMode(HSB)
-    // const liquidLayers = [
-    //     { perc: 0, color: drink.liquid[0] },
-    //     { perc: 1, color: drink.liquid[1] },
-    //     { perc: 2, color: color(choose(bgColors.top)) },
-    // ]
 
     const liquidLayers = []
     drink.liquid.forEach((drinkColor, i) => {
@@ -14,20 +8,8 @@ async function drawLiquid() {
     })
     const topColor = color(drink.liquid[drink.liquid.length - 1].toString())
     // const topColor = color(choose(bgColors.top))
-    // topColor.setAlpha(alpha(drink.liquid[0]))
     liquidLayers.push({ perc: 2, color: topColor })
-    print(liquidLayers)
-
-    // const liquidLayers = [
-    //     { perc: 0, color: color('brown') },
-    //     { perc: .4, color: color('brown') },
-    //     { perc: .5, color: color('white') },
-    //     { perc: 1, color: color('white') },
-    //     { perc: 2, color: color(choose(bgColors.top)) },
-    // ]
-
     // liquidLayers[liquidLayers.length-1].color = color(255)
-    // colorMode(RGB)
 
     const mixNoiseScale = random(30, 100) * PS
     const mixNoiseStrength = .4

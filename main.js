@@ -6,7 +6,6 @@ async function makeImage() {
     initPaths()
 
     await makeBG()
-
     translate(width / 2, height / 2 + 200 * PS)
 
 
@@ -53,7 +52,7 @@ async function makeImage() {
 
 
 async function revolve(path, drawFunc, translationFunc = (p) => P(0, p.y)) {
-    for (let i = 0; i < path.length; i += .8 * PS) {
+    for (let i = 0; i < path.length; i += .5 * PS) {
         const pos = path.getPointAt(i)
         if (pos.x < 2) continue
         const ellipse = new Path.Ellipse({ center: P(0, 0), size: P(pos.x * 2, pos.x * 2) })
