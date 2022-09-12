@@ -2,7 +2,7 @@
 async function drawLiquid() {
     resetRandom()
 
-    const liquidLayers = []
+    liquidLayers = []
     drink.liquid.forEach((drinkColor, i) => {
         liquidLayers.push({ perc: i / drink.liquid.length, color: color(drinkColor.toString()) })
     })
@@ -39,7 +39,7 @@ async function drawLiquid() {
             strokeWeight(2 * PS)
             const i2 = i % round(ellipsePath.length / 2)
             const distFromEdges = abs(i2 - ellipsePath.length / 4) / (ellipsePath.length / 4)
-            clr = lerpColor(clr, color(0), distFromEdges * (1 - heightPerc))
+            clr = lerpColor(clr, color(0,alpha(clr)), distFromEdges * (1 - heightPerc))
             clr.setAlpha(min((1 - heightPerc) * 75 + 75, alpha(clr)))
             stroke(clr)
             drawDot(p)
