@@ -19,7 +19,8 @@ const gradients = [
     ['#9AB5A1', '#EFEFEF', '#E8DEE0', '#7DCBA6', '#617FA4'],
     ['#EE511D', '#B43D37', '#3D526C', '#617FA4', '#3D526C'],
     ['#FFDCFB', '#FFA4A9', '#EA3F49', '#EA746D', '#FF7B51'],
-    ['#192526', '#273232', '#000000', '#000000', '#253838'],
+    ['#192526', '#273232', '#000000', '#253838'],
+    ['#141126', '#121422', '#000000', '#292929'],
     ['#292929', '#323232', '#000000', '#000000', '#363636'],
     ['#FF7070', '#F7314D', '#FBF3AC', '#ACFBF0', '#65E3EC', '#83FFD2'],
     ['#8EDB5F', '#D2DC5E', '#E3DE5C', '#B8E35C', '#5DF7E5', '#CCFFF8', '#EBFFFD'],
@@ -27,32 +28,21 @@ const gradients = [
 ]
 
 
-bottomOptions = [
-    ['#ADA2FE', '#F3CBFD', '#FFDBFF', '#FC99DA'],
-    ['#EA1E27', '#FE9069', '#F6AC79'],
-    ['#03373F', '#046A55', '#03373F']
-]
-topOptions = [
-    ['#FF6E62', '#FF8A61', '#FFAA31'],
-    ['#C58DBE', '#B9C6F3', '#27C5F5'],
-    ['#00D96B', '#095F56', '#36CBE1']
-]
-
-
-
 async function makeBG() {
     resetRandom()
-    drawbg()
+    getBG_Gradient()
+    noStroke()
+    rect(0, 0, canvas.width, canvas.height);
 
     bgType = random() < 0.3 ? false : choose(['clouds', 'checkerboard', 'jelly', 'umbrellas', 'monstera', 'glasses'])
-    const withMirror = bgType==false ? random()<0.9 : random() < .5
+    const withMirror = bgType == false ? random() < 0.9 : random() < .5
 
     if (bgType == 'monstera') await bgElements(PS * 100, async pos => await monstera(pos))
-    if (bgType == 'clouds') await clouds()
+    if (bgType == 'clouds') await bgElements(PS * 120, async pos => await cloud(pos.x, -pos.y, random(50, 100 * PS)))
     if (bgType == 'jelly') {
-        const withStem = random() < 0.3
-        const jellyBeans = withStem ? false : random() < 0.5
-        await bgElements(PS * 100, async pos => await drawCherry(pos, 'cherry', { bg: true, stem: withStem, jelly: jellyBeans }))
+        let jellyBeans = random() < 0.5
+        if (drink.name && !findWordInString('cherry', drink.name)) jellyBeans = true
+        await bgElements(PS * 100, async pos => await drawCherry(pos, 'cherry', { bg: true, stem: !jellyBeans, jelly: jellyBeans }))
     }
     if (bgType == 'umbrellas') {
         const umbrellaColors = [color(choose(bgColors.bottom)), choose([color(choose(bgColors.top)), color(255)])]
@@ -74,9 +64,10 @@ function addDrinkName() {
         textFont(myFont)
 
         const topGradColor = bgColors.top[bgColors.top.length - 1]
-        const offset = brightness(topGradColor) > 127 ? -40 : 40
+        const offset = brightness(topGradColor) > 127 ? -70 : 70
         const textColor = color(red(drink.liquid[0]) + offset, green(drink.liquid[0]) + offset, blue(drink.liquid[0]) + offset)
-        fill(255)
+        textColor.setAlpha(150)
+        fill(textColor)
         if (drink.ingredients.length > 1) {
             const txt = drink.ingredients.join(' · ')
             textSize(PS * 2)
@@ -86,6 +77,7 @@ function addDrinkName() {
             text(txt, width * .5, textPos)
             textPos += textSize() * .85
         }
+        textColor.setAlpha(255)
         fill(textColor)
         for (word of drink.name) {
             noStroke()
@@ -133,49 +125,6 @@ function getBG_Gradient(remix = false) {
     drawingContext.fillStyle = gradient;
 }
 
-
-
-function drawbg() {
-    getBG_Gradient()
-
-    noStroke()
-    rect(0, 0, canvas.width, canvas.height);
-}
-
-async function glassShadow_curtain() {
-    await revolve(path, async (ellipse, pathIndex) => {
-        const perc = pathIndex / (path.length - 1)
-        ellipse.position.y *= -1
-        if (ellipse.position.y < -10) ellipse.position.y = min(ellipse.position.y + 30, -10)
-
-        for (let i = 0; i < ellipse.length; i += 1) {
-            const loc = ellipse.getLocationAt(i)
-            const p = loc.point
-            stroke(0)
-            const ll = 2 * perc
-            drawDot(p, P(-random(ll), -random(ll)), P(random(ll), random(ll)))
-        }
-        await timeout()
-    }, (p) => P(-80, -30 + p.y))
-
-    let color1 = color(bgColors.bottom[0])
-    let color2 = color(bgColors.bottom[2])
-
-    shaderGraphics.resizeCanvas(width, height)
-    shaderGraphics.shader(bgShader)
-    bgShader.setUniform('time', random(1000))
-    bgShader.setUniform('color1', [red(color1) / 255, green(color1) / 255, blue(color1) / 255])
-    bgShader.setUniform('color1', [red(color2) / 255, green(color2) / 255, blue(color2) / 255])
-    bgShader.setUniform('resolution', [width, height])
-    push()
-    resetMatrix()
-    bgShader.setUniform('tex0', get())
-    shaderGraphics.rect(-width / 2, -height / 2, width, height)
-    image(shaderGraphics, 0, 0)
-    pop()
-    return
-}
-
 async function glassShadow() {
     resetRandom()
     let color1 = color(bgColors.bottom[0])
@@ -184,8 +133,8 @@ async function glassShadow() {
     const brghtnessOffset = brightness(bgColors.bottom[0]) < 50 ? 50 : -50;
 
     colorMode(HSB)
-    color1 = color(hue(color1), max(saturation(color1),50), brightness(color1) + brghtnessOffset)
-    color2 = color(hue(color2), max(saturation(color2),50), brightness(color2) + brghtnessOffset)
+    color1 = color(hue(color1), max(saturation(color1), 50), brightness(color1) + brghtnessOffset)
+    color2 = color(hue(color2), max(saturation(color2), 50), brightness(color2) + brghtnessOffset)
     colorMode(RGB)
 
     strokeWeight(1)
@@ -275,34 +224,7 @@ function checkerboard() {
     }
 }
 
-async function clouds() {
-    cloudPaths = []
-    for (let i = 0; i < 100; i++) {
-        let tries = 0
-        let newPath = null
-        while (tries < 100) {
-            tries++
-            const s = random(50, 100) * PS
-            newPath = new Path.Ellipse({ point: P(random(width), random(height)), size: P(s * 2, s) })
-            for (let j = 0; j < cloudPaths.length; j++) {
-                const cp = cloudPaths[j]
-                if (cp.intersects(newPath)) {
-                    newPath.remove()
-                    newPath = null
-                }
-            }
-        }
-        if (newPath) cloudPaths.push(newPath)
-    }
-    for (let i = 0; i < cloudPaths.length; i++) {
-        const cp = cloudPaths[i]
-        cloud(cp.position.x, cp.position.y, cp.bounds.width / 2)
-        cp.remove()
-        await timeout()
-    }
-}
-
-function cloud(cloudx, cloudy, cloudSize) {
+async function cloud(cloudx, cloudy, cloudSize) {
     noiseDetail(6, 0.65);
 
     cloudNoiseScale = random(30, 100)
@@ -348,6 +270,7 @@ function cloud(cloudx, cloudy, cloudSize) {
         }
     }
     resetMatrix()
+    await timeout()
 }
 
 function mirror() {
@@ -359,8 +282,8 @@ function mirror() {
         const border = random(50, 150) * PS
         mirrorRect = new Path.Rectangle({ point: P(border, border), size: P(width - border * 2, height - border * 2) })
     } else {
-        const h = height * random(.6,.9)
-        mirrorRect = new Path.Rectangle({ point: P(100 * PS, (height-h)/2), size: P(300 * PS, h) })
+        const h = height * random(.6, .9)
+        mirrorRect = new Path.Rectangle({ point: P(100 * PS, (height - h) / 2), size: P(300 * PS, h) })
     }
 
     noStroke()
@@ -377,7 +300,7 @@ async function bgElements(dist, func) {
         let tries = 0
         while (tries < 100) {
             tries++
-            const p = P(random(width), random(-height))
+            const p = P(width * random(-0.1, 1.1), height * random(-1.1, -0.1))
             if (elementPlaces.length > 0)
                 if (elementPlaces.map(a => a.getDistance(p)).sort((a, b) => a - b)[0] < dist) continue
             elementPlaces.push(p)
@@ -434,40 +357,63 @@ async function monstera(pos) {
 }
 
 async function lightning() {
-    stroke(255)
-
-    const lightning = new Path([P(width, 0), P(width / 2, height / 2)])
-    // lightning.segments.forEach((seg,segI)=>{
-    //     if (segI == 0 || segI == lightning.segments.length-1) return
-    //     seg.point = seg.point.add(seg.location.normal.multiply(random(-10,10)))
-    // })
-    // drawingContext.filter = 'blur(5px)'
-    await lightningBranch(lightning, 12)
+    for (let i=0;i<3;i++) await lightningBolt()
 }
 
-async function lightningBranch(path, size) {
-    path.rebuild(round(path.length / 30))
-    path.segments.forEach((seg, segI) => {
-        if (segI == 0 || segI == path.segments.length - 1) return
-        seg.point = seg.point.add(seg.location.normal.multiply(size * random(-5, 5)))
-    })
+async function lightningBolt() {
+    const startPos = P(random(-width / 2, width / 2), -height)
+    const liquidCorner = liquidPath.segments[liquidPath.segments.length - 2].point
+    const endPos = P(0, -liquidCorner.y)
+    const lightningPath = new Path([startPos, endPos])
 
-    stroke(255)
-    for (let i = 0; i < path.length; i++) {
-        const p = path.getPointAt(i)
-        strokeWeight(map(i, 0, path.length, size, 0))
-        line(p.x, p.y, p.x, p.y)
-    }
-
-    if (path.length > 150) {
-        for (let i = 0; i < path.length / 150; i++) {
-            const r = random(0.2, 0.8) * path.length
-            const loc = path.getLocationAt(r)
-            const newPath = new Path([loc.point, loc.point.add(loc.normal.multiply(path.length * random(0.2, 0.5)))])
-            await lightningBranch(newPath, map(r, 0, path.length, size, 0))
+    for (let t = 0; t < 4; t++) {
+        for (let segI=0; segI<lightningPath.segments.length-1; segI++) {
+            const seg1 = lightningPath.segments[segI]
+            const seg2 = lightningPath.segments[segI+1]
+            const d = seg1.point.getDistance(seg2.point)
+            if (d < 10) continue
+            const offset1 = seg1.location.offset
+            const offset2 = seg2.location.offset
+            for (let i = 0; i < 3; i++) {
+                const newSeg = lightningPath.divideAt(random(offset1,offset2))
+                const norm = newSeg.location.normal
+                newSeg.point = newSeg.point.add(norm.multiply(d * random(-.2, .2)))
+            }
         }
     }
 
+    const side1Points = []
+    const side2Points = []
+
+    let n1 = 0, n2 = 58
+    for (let i = 0; i < lightningPath.length; i+=5) {
+        n1 += .01
+        n2 += .01
+        const v1 = noise(n1) ** 2 * map(i, 0, lightningPath.length, 20, 10)
+        const v2 = noise(n2) ** 2 * map(i, 0, lightningPath.length, 20, 10)
+        const loc = lightningPath.getLocationAt(i)
+        side1Points.push(loc.point.add(loc.normal.multiply(v1)))
+        side2Points.push(loc.point.subtract(loc.normal.multiply(v2)))
+    }
+
+    side2Points.reverse()
+    noStroke()
+    fill(red(drink.liquid[0]), green(drink.liquid[0]), blue(drink.liquid[0]))
+    drawingContext.filter = 'blur(12px)'
+    beginShape()
+    side1Points.forEach(p => vertex(p.x, p.y))
+    side2Points.forEach(p => vertex(p.x, p.y))
+    endShape(CLOSE)
+    
+    fill(255,200)
+    drawingContext.filter = 'blur(2px)'
+    beginShape()
+    side1Points.forEach(p => vertex(p.x, p.y))
+    side2Points.forEach(p => vertex(p.x, p.y))
+    endShape(CLOSE)
+
+    noFill()
+    drawingContext.filter = 'none'
 }
 
 async function sideLeaf() {

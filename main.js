@@ -1,36 +1,40 @@
 let PERSPECTIVE = 1 / 8
 const usePerespective = true//random() < 0.5
 
+let anomaly = null
+
 async function makeImage() {
     initDrink()
+    if (!drink.name && random()<0.02) anomaly = 'upsideDown'
+    if (!anomaly && random()<0.05) anomaly = 'lightning'
     initPaths()
 
     await makeBG()
     translate(width / 2, height / 2 + 200 * PS)
 
-
     await glassShadow()
 
-    await rim('back')
+    anomaly != 'upsideDown' && await rim('back')
     await drawGlass(path, 'back')
     await glassBubble()
 
-    await drawLiquid()
-    await liquidTop()
+    anomaly != 'upsideDown' && await drawLiquid()
+    anomaly != 'upsideDown' && await liquidTop()
 
     bubbles()
     ice()
     leaves()
     stick()
-    await drawDrinkElements()
+    anomaly != 'upsideDown' && await drawDrinkElements()
 
-    await fruit()
+    anomaly != 'upsideDown' && await fruit()
+    anomaly == 'lightning' && await lightning()
 
     await drawGlass(path, 'front')
     await sun()
-    await rim('front')
+    anomaly != 'upsideDown' && await rim('front')
 
-    await umbrella()
+    anomaly != 'upsideDown' && await umbrella()
 
     await sideLeaf()
 
@@ -46,20 +50,20 @@ async function makeImage() {
     // image(shaderGraphics, 0, 0)
 
     fxpreview()
-    // save()
-    // setTimeout(()=>{ window.location.reload() } , 1000)
+    // save(fxhash+'.jpeg');
+    // setTimeout(()=>{ window.location.reload() } , 300)
 }
 
 
-async function revolve(path, drawFunc, translationFunc = (p) => P(0, p.y)) {
-    for (let i = 0; i < path.length; i += .5 * PS) {
-        const pos = path.getPointAt(i)
+async function revolve(rev_path, drawFunc, translationFunc = (p) => P(0, p.y)) {
+    for (let i = 0; i < rev_path.length; i += .5 * PS) {
+        const pos = rev_path.getPointAt(i)
         if (pos.x < 2) continue
         const ellipse = new Path.Ellipse({ center: P(0, 0), size: P(pos.x * 2, pos.x * 2) })
-        if (drink.glassRidges > 0 && i < path.ridgeEnd) {
+        if (drink.glassRidges > 0 && i < rev_path.ridgeEnd) {
             ellipse.rebuild(drink.glassRidges * 2)
             ellipse.segments.forEach((seg, segI) => {
-                const val = constrain(map(i, path.ridgeSmoothStart, path.ridgeEnd, .8, 1), .8, 1)
+                const val = constrain(map(i, rev_path.ridgeSmoothStart, rev_path.ridgeEnd, .8, 1), .8, 1)
                 if (segI % 2 == 0) seg.point = seg.point.multiply(val)
                 // if (segI % 2 == 0) seg.point = seg.point.multiply(constrain(map(i, 0, path.length/5, .8, 1),0,1))
             })

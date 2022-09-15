@@ -47,7 +47,7 @@ function initDrink() {
             name: ['watermelon', 'margarita'], glassType: 'margarita',
             frost: random(.2), ice: '30 crushed', mint: 3, bubbles: '50 seeds',
             rim: true, fruit: 'lemon', stick: 'straw',
-            iquid: [color('#dd2d4a'), color('#ff99ac')],
+            liquid: [color('#dd2d4a'), color('#ff99ac')],
             ingredients: ['tequila', 'triple sec', 'lime juice', 'watermelon juice'],
         },
         tequila_sunrise: {
@@ -276,13 +276,18 @@ function initDrink() {
 
     }
 
-    if (random() < .2) drink = { ...drink, ...choose(Object.values(drinks)) }
+    if (random() < .35) drink = { ...drink, ...choose(Object.values(drinks)) }
     // drink = { ...drink, ...drinks.kir_royale }
 
     if (drink.hues && !drink.liquid) drink.liquid = drink.hues[0].map(h => getColorFromHueName(h, drink.hues[1]))
     if (!drink.name) {
         drink = { ...drink, ...base }
-        drink.liquid = getRandomColors()
+        if (random()<0.2){
+            const hue = choose(['amber','yellow'])
+            const drinkHues = [[hue, hue], 100]
+            drink.liquid = drinkHues[0].map(h => getColorFromHueName(h, drinkHues[1]))
+            if (hue=='yellow') drink.top = 'foam'
+        } else drink.liquid = getRandomColors()
     }
 
     print(drink)

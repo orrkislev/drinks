@@ -41,9 +41,9 @@ class glassPath extends Path {
 
         } else if (drink.glassType === 'wine') {
             const stemWidth = random(3, 10) * PS
-            const stemHeight = random(100, 200) * PS
+            const stemHeight = random(100, 250) * PS
             const glassWidth = random(50, 150) * PS
-            const glassHeight = random(100, 250) * PS
+            const glassHeight = random(70, 250) * PS
             const baseWidth = random(stemWidth + 10 * PS, glassWidth)
             this.addPoint(P(0, 0))
             this.addPoint(P(baseWidth, 0))
@@ -199,6 +199,13 @@ function initPaths() {
         startDir: random(180),
     }
     stickData.endDir = stickData.startDir + 180
+
+    if (anomaly == 'upsideDown') {
+        path.scale(1, -1)
+        if (path.bubble) {
+            path.bubble.position.y = path.position.y * 2 - path.bubble.position.y
+        }
+    }
 }
 
 
@@ -293,28 +300,24 @@ async function drawGlass(path, frontOrBack) {
     funcTime /= path.length
 }
 
-async function drawSmallGlass(pos){
+async function drawSmallGlass(pos) {
     resetRandom()
-    const scaleVal = PS * random(30,70) / path.bounds.height
+    const scaleVal = PS * random(30, 70) / path.bounds.height
     const smallGlass = path.clone().scale(scaleVal)
     smallGlass.position.x -= smallGlass.bounds.left
     push()
-    translate(pos.x, -pos.y + 100)
-    rotate(random(-15,15))
+    translate(pos.x, -pos.y + 200 * PS)
+    rotate(random(-15, 15))
     // glassColor1 = glassColor1 ?? color(choose(bgColors.bottom))
     // glassColor2 = glassColor2 ?? color(choose(bgColors.top))
-    stroke(0,100)
-    strokeWeight(PS)
-    let p
-    for (let i=0;i<smallGlass.length;i+=.5*PS){
-        p = smallGlass.getPointAt(i)
-        line(p.x,-p.y,p.x,-p.y)
-        line(-p.x,-p.y,-p.x,-p.y)
+    // stroke(0,100)
+    // strokeWeight(PS)
+    for (let i = 0; i < smallGlass.length; i += .5 * PS) {
+        const p = smallGlass.getPointAt(i)
+        stroke(map(p.y, 0, smallGlass.bounds.height, 0, 255), 40)
+        line(p.x, -p.y, -p.x, -p.y)
     }
-    for (let x=p.x;x>0;x-=.5*PS){
-        line(x,-p.y,x,-p.y)
-        line(-x,-p.y,-x,-p.y)
-    }
+    endShape()
     pop()
 }
 

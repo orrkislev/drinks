@@ -50,7 +50,7 @@ async function drawCherry(pos, cherryOrOlive, data = {}) {
         lightVals = [.2, .3]
     }
     if (data.jelly) pathToDraw = pathToDraw.scale(1,random(1.2,1.6)).rotate(random(90))
-    if (data.bg) pathToDraw = pathToDraw.scale(random(.7,1.3))
+    // if (data.bg) pathToDraw = pathToDraw.scale(random(.7,1.3))
 
     if (!cherryColor) cherryColor = choose([color(40, 14, 20), color(200, 40, 60)])
     let clr = cherryOrOlive == 'cherry' ? cherryColor : color(10, 100, 40)
