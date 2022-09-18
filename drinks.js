@@ -81,7 +81,7 @@ function initDrink() {
         martini: {
             name: ['Martini'], glassType: 'martini',
             stick: 'stirrer', frost: random(),
-            hues: [['white', 'yellow'], 50],
+            hues: [['white', 'yellow'], 10],
             fruit: choose(['lemon peel', 'skewed olive', 'sinking olive']),
             ingredients: ['gin', 'dry vermouth'],
         },
@@ -277,7 +277,7 @@ function initDrink() {
     }
 
     if (random() < .35) drink = { ...drink, ...choose(Object.values(drinks)) }
-    // drink = { ...drink, ...drinks.kir_royale }
+    // drink = { ...drink, ...drinks.martini }
 
     if (drink.hues && !drink.liquid) drink.liquid = drink.hues[0].map(h => getColorFromHueName(h, drink.hues[1]))
     if (!drink.name) {

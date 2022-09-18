@@ -42,7 +42,7 @@ async function makeBG() {
     if (bgType == 'jelly') {
         let jellyBeans = random() < 0.5
         if (drink.name && !findWordInString('cherry', drink.name)) jellyBeans = true
-        await bgElements(PS * 100, async pos => await drawCherry(pos, 'cherry', { bg: true, stem: !jellyBeans, jelly: jellyBeans }))
+        await bgElements(PS * 80, async pos => await drawCherry(pos, 'cherry', { bg: true, stem: !jellyBeans, jelly: jellyBeans }))
     }
     if (bgType == 'umbrellas') {
         const umbrellaColors = [color(choose(bgColors.bottom)), choose([color(choose(bgColors.top)), color(255)])]
@@ -115,7 +115,7 @@ function getBG_Gradient(remix = false) {
     const gradHorOff = random() < .2 ? width * random(.5, .8) : width * .5
     const gradient = drawingContext.createLinearGradient(gradHorOff, height, width - gradHorOff, 0)
     const horizonPos = .4
-    const horizonThickness = random(.2, .5)
+    const horizonThickness = .3
     for (let i = 0; i < bgColors.bottom.length; i++) {
         gradient.addColorStop(horizonPos * i / (bgColors.bottom.length - 1), bgColors.bottom[i]);
     }
@@ -300,7 +300,7 @@ async function bgElements(dist, func) {
         let tries = 0
         while (tries < 100) {
             tries++
-            const p = P(width * random(-0.1, 1.1), height * random(-1.1, -0.1))
+            const p = P(width * random(-0.1, 1.1), height * random(-1.1, 0.1))
             if (elementPlaces.length > 0)
                 if (elementPlaces.map(a => a.getDistance(p)).sort((a, b) => a - b)[0] < dist) continue
             elementPlaces.push(p)
@@ -351,7 +351,14 @@ async function monstera(pos) {
     leafShape.translate(pos.x, -pos.y)
     leafShape.rotate(random(360))
     leafShape = leafShape.scale(random(.45, .55) * PS)
-    fillPath(leafShape, color(choose(drinkColors.green)))
+    const grad = drawingContext.createLinearGradient(leafShape.bounds.left, leafShape.bounds.top, leafShape.bounds.right, leafShape.bounds.bottom)
+    const clr = color(choose(drinkColors.green))
+    grad.addColorStop(0, clr.toString())
+    const clr2 = color(red(clr)-50, green(clr)-50, blue(clr)-50)
+    grad.addColorStop(1, clr2.toString())
+    drawingContext.fillStyle = grad
+    // fillPath(leafShape, color(choose(drinkColors.green)))
+    fillPath(leafShape)
     await timeout()
 
 }

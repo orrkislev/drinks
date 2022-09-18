@@ -307,15 +307,21 @@ async function drawSmallGlass(pos) {
     smallGlass.position.x -= smallGlass.bounds.left
     push()
     translate(pos.x, -pos.y + 200 * PS)
-    rotate(random(-15, 15))
-    // glassColor1 = glassColor1 ?? color(choose(bgColors.bottom))
-    // glassColor2 = glassColor2 ?? color(choose(bgColors.top))
-    // stroke(0,100)
-    // strokeWeight(PS)
     for (let i = 0; i < smallGlass.length; i += .5 * PS) {
         const p = smallGlass.getPointAt(i)
-        stroke(map(p.y, 0, smallGlass.bounds.height, 0, 255), 40)
-        line(p.x, -p.y, -p.x, -p.y)
+
+        for (let j=-p.x; j<p.x;j+=1){
+            const angle = map(j, -p.x, p.x, 0,180)
+            highlights.forEach(h => {
+                if (angle > h.pos - h.width && angle < h.pos + h.width) {
+                    const d = abs(angle - h.pos)
+                    const s = h.strength * (1 - d / h.width)
+                    stroke(255, 75 * s)
+                    line(j, -p.y, j, -p.y)
+                }
+            })   
+        }
+        await timeout()
     }
     endShape()
     pop()
