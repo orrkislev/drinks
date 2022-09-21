@@ -17,7 +17,7 @@ function drawShape(ps, x = 0, y = 0) {
 lastTimeoutTime = 0
 function timeout(ms) {
     // return waitForKey(32).then(() => new Promise(resolve => setTimeout(resolve, max(ms, 100))))
-    if (performance.now() - lastTimeoutTime < 10) return
+    if (performance.now() - lastTimeoutTime < 20) return
     lastTimeoutTime = performance.now()
     return new Promise(resolve => setTimeout(resolve, ms));
 }

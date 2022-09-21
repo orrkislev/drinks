@@ -50,8 +50,8 @@ async function makeImage() {
     // image(shaderGraphics, 0, 0)
 
     fxpreview()
-    // save(fxhash+'.jpeg');
-    // setTimeout(()=>{ window.location.reload() } , 300)
+    save(fxhash+'.png');
+    setTimeout(()=>{ window.location.reload() } , 300)
 }
 
 
