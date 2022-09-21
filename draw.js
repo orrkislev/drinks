@@ -43,13 +43,14 @@ function pathToPoints(path) {
 
 function drawPath(path, opacity = 1, clr = 'black') {
     penColor = color(clr)
+    strokeWeight(1)
     if (path.children) {
         path.children.forEach(drawPath)
         return 
     }
     const ps = pathToPoints(path)
     // ps.forEach(p => drawDotXY(p.x, p.y, opacity))
-    ps.forEach(p => line(p.x,p.y,p.x,p.y))
+    ps.forEach(p => line(p.x,-p.y,p.x,-p.y))
 }
 function fillPath(path,clr) {
     if (clr) activeGraphics.fill(clr)

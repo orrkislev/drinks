@@ -226,7 +226,7 @@ function initDrink() {
             name: ['Fjellbekk'], glassType: 'highball',
             ice: '10 small', hues: [['white', 'yellow'], 50],
             fruit: 'lemon wedge', bubbles: 100, rim: random() < 0.5,
-            ingredients: ['vodka', 'lemon juice', 'simple syrup', 'club soda'],
+            ingredients: ['aquavit','vodka', 'lemon juice', 'club soda'],
         },
         mimosa: {
             name: ['Mimosa'], glassType: 'wine',
@@ -259,7 +259,7 @@ function initDrink() {
         gimlet: {
             name: ['Gimlet'], glassType: 'martini',
             ice: 3, mint: 3, rim: true, fruit: choose(['rim lemon wedge', 'lemon slice']),
-            hues: [['green', 'yellow'], 100],
+            hues: [['yellow', 'white'], 30],
             ingredients: ['gin', 'lime juice', 'simple syrup'],
         },
         corpse_reviver: {
@@ -358,5 +358,6 @@ function gerRandomFruit() {
     } else {
         result += " " + choose(['floating', 'skewed', 'sinking'])
     }
+    if (random()<0.03) result = 'pobble'
     return result
 }

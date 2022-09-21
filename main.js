@@ -27,8 +27,8 @@ async function makeImage() {
     stick()
     anomaly != 'upsideDown' && await drawDrinkElements()
 
-    anomaly != 'upsideDown' && await fruit()
     anomaly == 'lightning' && await lightning()
+    anomaly != 'upsideDown' && await fruit()
 
     await drawGlass(path, 'front')
     await sun()

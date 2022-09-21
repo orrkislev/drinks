@@ -4,6 +4,7 @@ async function fruit() {
     if (findWordInString(drink.fruit, 'slice')) await fruit_slice()
     if (findWordInString(drink.fruit, 'shrimp')) await shrimp()
     if (findWordInString(drink.fruit, 'wedge')) await fruit_wedge()
+    if (findWordInString(drink.fruit, 'pobble')) await drawPobble()
 }
 
 async function cherries() {

@@ -307,10 +307,10 @@ async function drawSmallGlass(pos) {
     smallGlass.position.x -= smallGlass.bounds.left
     push()
     translate(pos.x, -pos.y + 200 * PS)
-    for (let i = 0; i < smallGlass.length; i += .5 * PS) {
+    for (let i = 0; i < smallGlass.length; i += .3 * PS) {
         const p = smallGlass.getPointAt(i)
 
-        for (let j=-p.x; j<p.x;j+=1){
+        for (let j=-p.x; j<p.x;j+=.5 * PS){
             const angle = map(j, -p.x, p.x, 0,180)
             highlights.forEach(h => {
                 if (angle > h.pos - h.width && angle < h.pos + h.width) {

@@ -37,7 +37,7 @@ async function makeBG() {
     bgType = random() < 0.3 ? false : choose(['clouds', 'checkerboard', 'jelly', 'umbrellas', 'monstera', 'glasses'])
     const withMirror = bgType == false ? random() < 0.9 : random() < .5
 
-    if (bgType == 'monstera') await bgElements(PS * 100, async pos => await monstera(pos))
+    if (bgType == 'monstera') await bgElements(PS * 75, async pos => await monstera(pos))
     if (bgType == 'clouds') await bgElements(PS * 120, async pos => await cloud(pos.x, -pos.y, random(50, 100 * PS)))
     if (bgType == 'jelly') {
         let jellyBeans = random() < 0.5
@@ -368,7 +368,7 @@ async function lightning() {
 }
 
 async function lightningBolt() {
-    const startPos = P(random(-width / 2, width / 2), -height)
+    const startPos = P(width/2, -height)
     const liquidCorner = liquidPath.segments[liquidPath.segments.length - 2].point
     const endPos = P(0, -liquidCorner.y)
     const lightningPath = new Path([startPos, endPos])
