@@ -65,7 +65,8 @@ function addDrinkName() {
 
         const topGradColor = bgColors.top[bgColors.top.length - 1]
         const offset = brightness(topGradColor) > 127 ? -70 : 70
-        const textColor = color(red(drink.liquid[0]) + offset, green(drink.liquid[0]) + offset, blue(drink.liquid[0]) + offset)
+        let textColor = color(red(drink.liquid[0]) + offset, green(drink.liquid[0]) + offset, blue(drink.liquid[0]) + offset)
+        textColor = neighborColor(textColor, random(-20, 20), random(-10, 10), random(-10, 10))
         textColor.setAlpha(150)
         fill(textColor)
         if (drink.ingredients.length > 1) {
@@ -105,6 +106,7 @@ function getBG_Gradient(remix = false) {
         bgColors.top.sort((a, b) => random() > .5 ? -1 : 1)
     } else {
         const grad = choose(gradients)
+        if (random() < 0.3) grad.sort((a, b) => random() > .5 ? -1 : 1)
         bgColors = {
             bottom: grad.slice(0, floor(grad.length / 2)),
             top: grad.slice(floor(grad.length / 2))
@@ -354,7 +356,7 @@ async function monstera(pos) {
     const grad = drawingContext.createLinearGradient(leafShape.bounds.left, leafShape.bounds.top, leafShape.bounds.right, leafShape.bounds.bottom)
     const clr = color(choose(drinkColors.green))
     grad.addColorStop(0, clr.toString())
-    const clr2 = color(red(clr)-50, green(clr)-50, blue(clr)-50)
+    const clr2 = color(red(clr) - 50, green(clr) - 50, blue(clr) - 50)
     grad.addColorStop(1, clr2.toString())
     drawingContext.fillStyle = grad
     // fillPath(leafShape, color(choose(drinkColors.green)))
@@ -364,25 +366,25 @@ async function monstera(pos) {
 }
 
 async function lightning() {
-    for (let i=0;i<3;i++) await lightningBolt()
+    for (let i = 0; i < 3; i++) await lightningBolt()
 }
 
 async function lightningBolt() {
-    const startPos = P(width/2, -height)
+    const startPos = P(width / 2, -height)
     const liquidCorner = liquidPath.segments[liquidPath.segments.length - 2].point
     const endPos = P(0, -liquidCorner.y)
     const lightningPath = new Path([startPos, endPos])
 
     for (let t = 0; t < 4; t++) {
-        for (let segI=0; segI<lightningPath.segments.length-1; segI++) {
+        for (let segI = 0; segI < lightningPath.segments.length - 1; segI++) {
             const seg1 = lightningPath.segments[segI]
-            const seg2 = lightningPath.segments[segI+1]
+            const seg2 = lightningPath.segments[segI + 1]
             const d = seg1.point.getDistance(seg2.point)
             if (d < 10) continue
             const offset1 = seg1.location.offset
             const offset2 = seg2.location.offset
             for (let i = 0; i < 3; i++) {
-                const newSeg = lightningPath.divideAt(random(offset1,offset2))
+                const newSeg = lightningPath.divideAt(random(offset1, offset2))
                 const norm = newSeg.location.normal
                 newSeg.point = newSeg.point.add(norm.multiply(d * random(-.2, .2)))
             }
@@ -393,7 +395,7 @@ async function lightningBolt() {
     const side2Points = []
 
     let n1 = 0, n2 = 58
-    for (let i = 0; i < lightningPath.length; i+=5) {
+    for (let i = 0; i < lightningPath.length; i += 5) {
         n1 += .01
         n2 += .01
         const v1 = noise(n1) ** 2 * map(i, 0, lightningPath.length, 20, 10)
@@ -411,8 +413,8 @@ async function lightningBolt() {
     side1Points.forEach(p => vertex(p.x, p.y))
     side2Points.forEach(p => vertex(p.x, p.y))
     endShape(CLOSE)
-    
-    fill(255,200)
+
+    fill(255, 200)
     drawingContext.filter = 'blur(2px)'
     beginShape()
     side1Points.forEach(p => vertex(p.x, p.y))

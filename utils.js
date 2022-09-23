@@ -20,7 +20,7 @@ function preload() {
 
 const v = (x, y) => createVector(x, y)
 
-const resetRandomPlaces = [500,1000,1500,2000,2500]
+const resetRandomPlaces = [500, 1000, 1500, 2000, 2500]
 const resetRandom = () => {
     const t = resetRandomPlaces.shift()
     resetFxRand(t)
@@ -75,4 +75,11 @@ class Chance {
     get() {
         return choose(this.options)
     }
+}
+
+function neighborColor(clr, h = 0, s = 0, b = 0) {
+    colorMode(HSB)
+    const newClr = color(hue(clr) + h, saturation(clr) + s, brightness(clr) + b)
+    colorMode(RGB)
+    return newClr
 }

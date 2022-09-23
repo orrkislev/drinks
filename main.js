@@ -5,7 +5,7 @@ let anomaly = null
 
 async function makeImage() {
     initDrink()
-    if (!drink.name && random()<0.02) anomaly = 'upsideDown'
+    if (!drink.name && random()<0.033) anomaly = 'upsideDown'
     if (!anomaly && random()<0.05) anomaly = 'lightning'
     initPaths()
 
