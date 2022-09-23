@@ -42,15 +42,15 @@ async function drawCherry(pos, cherryOrOlive, data = {}) {
     let pathToDraw
     let lightVals = [0, 0]
     if (cherryOrOlive == 'cherry') {
-        pathToDraw = new Path.Circle({ center: pos, radius: 20 }).wonky(.85, 1.15)
+        pathToDraw = new Path.Circle({ center: pos, radius: 20 * PS }).wonky(.85, 1.15)
         lightVals = [.1, .5]
     } else {
-        pathToDraw = new Path.Circle({ center: pos, radius: 20 }).wonky(.9, 1.1)
+        pathToDraw = new Path.Circle({ center: pos, radius: 20 * PS }).wonky(.9, 1.1)
         pathToDraw.scale(1, 1.5)
         pathToDraw = pathToDraw.rotate(random(90))
         lightVals = [.2, .3]
     }
-    if (data.jelly) pathToDraw = pathToDraw.scale(.7,random(.8,1)).rotate(random(90))
+    if (data.jelly) pathToDraw = pathToDraw.scale(.7, random(.8, 1)).rotate(random(90))
     // if (data.bg) pathToDraw = pathToDraw.scale(random(.7,1.3))
 
     if (!cherryColor) cherryColor = choose([color(40, 14, 20), color(200, 40, 60)])
@@ -295,7 +295,7 @@ async function shrimp() {
     for (let t = 0; t < 2; t++) {
         const tailPath = new Path([
             new Segment(shrimpPath.lastSegment.point.add(0, -15), null, shrimpPath.lastSegment.location.tangent.multiply(-30)),
-            shrimpPath.lastSegment.point.add(shrimpPath.lastSegment.location.tangent.multiply(random(-70,-40)).rotate(random(-10, 10)))
+            shrimpPath.lastSegment.point.add(shrimpPath.lastSegment.location.tangent.multiply(random(-70, -40)).rotate(random(-10, 10)))
         ])
         for (let i = 0; i < tailPath.length; i += .1) {
             const loc = tailPath.getLocationAt(i)
