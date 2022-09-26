@@ -20,6 +20,7 @@ async function setup() {
     angleMode(DEGREES)
     activeGraphics = this
 
+    startAdventure()
     await makeImage()
 }
 

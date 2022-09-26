@@ -259,7 +259,7 @@ async function drawGlass(path, frontOrBack) {
 
             const n = noise(loc.normal.angle / 30, perc * 8)
             let clr = lerpColor(glassColor1, glassColor2, n)
-            clr.setAlpha(frontOrBack == 'front' ? 2 : 6)
+            clr.setAlpha(frontOrBack == 'front' ? 1 : 3)
 
             strokeWeight(2 * PS)
             stroke(clr)
